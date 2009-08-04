@@ -38,16 +38,16 @@
 #define refer_by_offset(stack,offset) \
     ((stack)->array+(stack)->element_size*(offset))
 
-#define refer_by_offset_from_front(stack,offset) \
+#define refer_by_offset_from_bottom(stack,offset) \
     (refer_by_offset((stack),(offset)))
 
-#define refer_by_offset_from_back(stack,offset) \
+#define refer_by_offset_from_top(stack,offset) \
     (refer_by_offset((stack),stack_size(stack)-1-(offset)))
 
-#define refer_front(stack) \
+#define refer_bottom(stack) \
     ((stack)->array)
 
-#define refer_back(stack) \
+#define refer_top(stack) \
     refer_by_offset((stack),(stack)->size)
 
 /*******************************************************************************
@@ -85,49 +85,49 @@ void stack_release(stack_t *stack)
 	}
 }
 
-unsigned int stack_front(stack_t *stack,void *output)
+unsigned int stack_bottom(stack_t *stack,void *output)
 {
 	if(stack_empty(stack)){
 		return STACK_EMPTY;
 	}
 	if(output){
-		memcpy(output,refer_front(stack),stack->element_size);
+		memcpy(output,refer_bottom(stack),stack->element_size);
 	}
 	return STACK_SUCCESS;
 }
 
-unsigned int stack_back(stack_t *stack,void *output)
+unsigned int stack_top(stack_t *stack,void *output)
 {
 	if(stack_empty(stack)){
 		return STACK_EMPTY;
 	}
 	if(output){
-		memcpy(output,refer_back(stack),stack->element_size);
+		memcpy(output,refer_top(stack),stack->element_size);
 	}
 	return STACK_SUCCESS;
 }
 
-unsigned int stack_refer_from_front
+unsigned int stack_refer_from_bottom
     (stack_t *stack,const size_t offset,void *output)
 {
 	if(offset >= stack_size(stack)){
 		return STACK_OFFSET_IS_TOO_LARGE;
 	}
 	if(output){
-		memcpy(output,refer_by_offset_from_front(stack,offset)
+		memcpy(output,refer_by_offset_from_bottom(stack,offset)
 		    ,stack->element_size);
 	}
 	return STACK_SUCCESS;
 }
 
-unsigned int stack_refer_from_back
+unsigned int stack_refer_from_top
     (stack_t *stack,const size_t offset,void *output)
 {
 	if(offset >= stack_size(stack)){
 		return STACK_OFFSET_IS_TOO_LARGE;
 	}
 	if(output){
-		memcpy(output,refer_by_offset_from_back(stack,offset)
+		memcpy(output,refer_by_offset_from_top(stack,offset)
 		    ,stack->element_size);
 	}
 	return STACK_SUCCESS;
@@ -190,7 +190,7 @@ unsigned int stack_pop_many_elements
 	if(output){
 		while(counter){
 			memcpy(output+stack->element_size*(pop_size-counter)
-			    ,refer_by_offset_from_back(stack,pop_size-counter)
+			    ,refer_by_offset_from_top(stack,pop_size-counter)
 			    ,stack->element_size);
 			counter--;
 		}

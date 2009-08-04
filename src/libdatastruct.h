@@ -246,13 +246,13 @@ extern stack_t *stack_initialize
     (const size_t,void (*)(void *));
 extern void stack_release
     (stack_t *);
-extern unsigned int stack_front
+extern unsigned int stack_bottom
     (stack_t *,void *);
-extern unsigned int stack_back
+extern unsigned int stack_top
     (stack_t *,void *);
-unsigned int stack_refer_from_front
+unsigned int stack_refer_from_bottom
 	(stack_t *,const size_t,void *);
-unsigned int stack_refer_from_back
+unsigned int stack_refer_from_top
 	(stack_t *,const size_t,void *);
 extern unsigned int stack_push
     (stack_t *,const void *);
