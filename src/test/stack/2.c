@@ -60,13 +60,13 @@ int main(void)
 	}
 	counter = 0;
 	while(counter != stack_size(stack)){
-		errcode = stack_refer_from_front(stack,counter,&integer);
+		errcode = stack_refer_from_bottom(stack,counter,&integer);
 		if(errcode){
 			fputs("Error!\n",stderr);
 			stack_release(stack);
 			return -1;
 		}
-		errcode = stack_refer_from_back(stack,counter,&integer_);
+		errcode = stack_refer_from_top(stack,counter,&integer_);
 		if(errcode){
 			fputs("Error!\n",stderr);
 			stack_release(stack);
