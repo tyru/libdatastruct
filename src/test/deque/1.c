@@ -55,7 +55,7 @@ int main(void)
 			fputs("Error!\n",stderr);
 			return -1;
 		}
-		printf("push_front : %d\n",pointer);
+		fprintf(stdout,"push_front : %d\n",pointer);
 		if(counter%3){
 			errcode = deque_pop_back(deque,&pointer);
 			if(errcode){
@@ -63,7 +63,7 @@ int main(void)
 				fputs("Error!\n",stderr);
 				return -1;
 			}
-			printf("pop_back   : %d\n",pointer);
+			fprintf(stdout,"pop_back   : %d\n",pointer);
 			free_object(&pointer);
 		}
 		else{
@@ -74,7 +74,7 @@ int main(void)
 				fputs("Error!\n",stderr);
 				return -1;
 			}
-			printf("push_back  : %d\n",pointer);
+			fprintf(stdout,"push_back  : %d\n",pointer);
 		}
 		counter++;
 	}
@@ -85,7 +85,7 @@ int main(void)
 			fputs("Error\n",stderr);
 			return -1;
 		}
-		printf("pop_front  : %d\n",pointer);
+		fprintf(stdout,"pop_front  : %d\n",pointer);
 		free_object(&pointer);
 	}
 	deque_release(deque);

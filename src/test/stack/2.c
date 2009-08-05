@@ -72,7 +72,7 @@ int main(void)
 			stack_release(stack);
 			return -1;
 		}
-		printf("%03d : %03d %03d\n",counter,integer,integer_);
+		fprintf(stdout,"%03d : %03d %03d\n",counter,integer,integer_);
 		counter++;
 	}
 	stack_release(stack);

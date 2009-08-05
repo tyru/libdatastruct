@@ -70,7 +70,7 @@ int main(void)
 		}
 		counter++;
 	}
-	printf("insert : %d/%d\n",clock()-time,CLOCKS_PER_SEC);
+	fprintf(stdout,"insert : %d/%d\n",clock()-time,CLOCKS_PER_SEC);
 	time = clock();
 	counter = 0;
 	while(counter != (1<<24)){
@@ -80,7 +80,7 @@ int main(void)
 		}
 		counter++;
 	}
-	printf("find   : %d/%d\n",clock()-time,CLOCKS_PER_SEC);
+	fprintf(stdout,"find   : %d/%d\n",clock()-time,CLOCKS_PER_SEC);
 	assoclist_release(assoclist);
 	return 0;
 }

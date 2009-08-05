@@ -59,7 +59,7 @@ int main(void)
 	while(counter != 40){
 		counter_ = 0;
 		while(counter_ != 40){
-			printf("from_top %02d %02d\n",counter,counter_);
+			fprintf(stdout,"from_top %02d %02d\n",counter,counter_);
 			errcode = stack_refer_many_elements_from_top
 			    (stack,counter,counter_,array);
 			if(errcode){
@@ -69,12 +69,12 @@ int main(void)
 				counter__ = 0;
 				fputc('\t',stdout);
 				while(counter__ != my_abs(counter-counter_)+1){
-					printf("%02d ",array[counter__]);
+					fprintf(stdout,"%02d ",array[counter__]);
 					counter__++;
 				}
 				fputc('\n',stdout);
 			}
-			printf("from_bottom %02d %02d\n",counter,counter_);
+			fprintf(stdout,"from_bottom %02d %02d\n",counter,counter_);
 			errcode = stack_refer_many_elements_from_bottom
 			    (stack,counter,counter_,array);
 			if(errcode){
@@ -84,7 +84,7 @@ int main(void)
 				counter__ = 0;
 				fputc('\t',stdout);
 				while(counter__ != my_abs(counter-counter_)+1){
-					printf("%02d ",array[counter__]);
+					fprintf(stdout,"%02d ",array[counter__]);
 					counter__++;
 				}
 				fputc('\n',stdout);

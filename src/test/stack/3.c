@@ -95,7 +95,7 @@ int stack_trace(stack_t *stack)
 {
 	size_t counter = 0;
 	while(counter != stack->size){
-		printf("%d ",((int *)stack->array)[counter]);
+		fprintf(stdout,"%d ",((int *)stack->array)[counter]);
 		counter++;
 	}
 	fputc('\n',stdout);
@@ -127,7 +127,7 @@ int main(void)
 					break;
 				}
 				buffer[counter] = read_integer(stdin);
-				printf("%d ",buffer[counter]);
+				fprintf(stdout,"%d ",buffer[counter]);
 				counter++;
 			}
 			ignore_to_newline(stdin);
@@ -152,7 +152,7 @@ int main(void)
 			}
 			counter = 0;
 			while(counter != size){
-				printf("%d ",buffer[counter]);
+				fprintf(stdout,"%d ",buffer[counter]);
 				counter++;
 			}
 			fputc('\n',stdout);

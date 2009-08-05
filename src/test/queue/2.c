@@ -74,7 +74,7 @@ int main(void)
 			queue_release(queue);
 			return -1;
 		}
-		printf("%03d : %03d %03d\n",counter,integer,integer_);
+		fprintf(stdout,"%03d : %03d %03d\n",counter,integer,integer_);
 		counter++;
 	}
 	queue_release(queue);

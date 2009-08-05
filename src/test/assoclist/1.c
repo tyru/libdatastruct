@@ -71,7 +71,7 @@ int main(void)
 			fputs("Error!\n",stderr);
 			return -1;
 		}
-		printf("add : %s,%d\n",integer_to_string(counter),pointer);
+		fprintf(stdout,"add : %s,%d\n",integer_to_string(counter),pointer);
 		counter++;
 	}
 	counter = 0;
@@ -81,7 +81,7 @@ int main(void)
 		if(errcode){
 			fputs("Error!\n",stderr);
 		}
-		printf("find : %s,%d\n",integer_to_string(counter),pointer);
+		fprintf(stdout,"find : %s,%d\n",integer_to_string(counter),pointer);
 		counter++;
 	}
 	assoclist_release(assoclist);

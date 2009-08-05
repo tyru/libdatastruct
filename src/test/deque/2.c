@@ -71,7 +71,7 @@ int main(void)
 			fputs("Error!\n",stderr);
 			return -1;
 		}
-		printf("%03d : %03d,%03d\n",counter,integer,integer_);
+		fprintf(stdout,"%03d : %03d,%03d\n",counter,integer,integer_);
 		counter++;
 	}
 	deque_release(deque);
