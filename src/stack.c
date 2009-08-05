@@ -174,7 +174,8 @@ unsigned int stack_refer_many_elements_from_top
 		area_size = offset_big-offset_small+1;
 		while(counter != area_size){
 			memcpy(output+stack->element_size*counter
-			    ,refer_by_offset_from_top(stack,counter),stack->element_size);
+			    ,refer_by_offset_from_top(stack,offset_small+counter)
+			    ,stack->element_size);
 			counter++;
 		}
 	}

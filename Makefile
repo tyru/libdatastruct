@@ -2,7 +2,8 @@
 all : run
 
 bin : bin/assoclist/1 bin/assoclist/2 bin/deque/1 bin/deque/2 \
-    bin/stack/1 bin/stack/2 bin/stack/3 bin/queue/1 bin/queue/2
+    bin/stack/1 bin/stack/2 bin/stack/3 bin/stack/4 \
+	bin/queue/1 bin/queue/2
 
 obj/ :
 	mkdir -p obj/
@@ -50,6 +51,10 @@ obj/test/stack/3.o : src/test/stack/3.c src/libdatastruct.h
 	mkdir -p obj/test/stack/
 	gcc -o $@ -c src/test/stack/3.c
 
+obj/test/stack/4.o : src/test/stack/4.c src/libdatastruct.h
+	mkdir -p obj/test/stack/
+	gcc -o $@ -c src/test/stack/4.c
+
 obj/test/queue/1.o : src/test/queue/1.c src/libdatastruct.h
 	mkdir -p obj/test/queue/
 	gcc -o $@ -c src/test/queue/1.c
@@ -86,6 +91,10 @@ bin/stack/3 : obj/libdatastruct.o obj/stack.o obj/test/stack/3.o
 	mkdir -p bin/stack/
 	gcc -o $@ $^
 
+bin/stack/4 : obj/libdatastruct.o obj/stack.o obj/test/stack/4.o
+	mkdir -p bin/stack/
+	gcc -o $@ $^
+
 bin/queue/1 : obj/libdatastruct.o obj/queue.o obj/test/queue/1.o
 	mkdir -p bin/queue/
 	gcc -o $@ $^
@@ -119,6 +128,11 @@ run : bin
 	@echo bin/stack/2
 	@echo
 	@bin/stack/2
+	
+	@echo
+	@echo bin/stack/4
+	@echo
+	@bin/stack/4
 	
 	@echo
 	@echo bin/queue/1
