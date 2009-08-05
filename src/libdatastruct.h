@@ -227,10 +227,10 @@ extern unsigned int deque_front
     (deque_t *,void *);
 extern unsigned int deque_back
     (deque_t *,void *);
-unsigned int deque_refer_from_front
-	(deque_t *,const size_t,void *);
-unsigned int deque_refer_from_back
-	(deque_t *,const size_t,void *);
+extern unsigned int deque_refer_from_front
+    (deque_t *,const size_t,void *);
+extern unsigned int deque_refer_from_back
+    (deque_t *,const size_t,void *);
 extern unsigned int deque_push_front
     (deque_t *,const void *);
 extern unsigned int deque_push_back
@@ -250,10 +250,14 @@ extern unsigned int stack_bottom
     (stack_t *,void *);
 extern unsigned int stack_top
     (stack_t *,void *);
-unsigned int stack_refer_from_bottom
-	(stack_t *,const size_t,void *);
-unsigned int stack_refer_from_top
-	(stack_t *,const size_t,void *);
+extern unsigned int stack_refer_from_bottom
+    (stack_t *,const size_t,void *);
+extern unsigned int stack_refer_from_top
+    (stack_t *,const size_t,void *);
+extern unsigned int stack_refer_many_elements_from_bottom
+    (stack_t *,const size_t,const size_t,void *);
+extern unsigned int stack_refer_many_elements_from_top
+    (stack_t *,const size_t,const size_t,void *);
 extern unsigned int stack_push
     (stack_t *,const void *);
 extern unsigned int stack_pop
@@ -273,9 +277,9 @@ extern unsigned int queue_front
     (queue_t *,void *);
 extern unsigned int queue_back
     (queue_t *,void *);
-unsigned int queue_refer_from_front
+extern unsigned int queue_refer_from_front
     (queue_t *,const size_t,void *);
-unsigned int queue_refer_from_back
+extern unsigned int queue_refer_from_back
     (queue_t *,const size_t,void *);
 extern unsigned int queue_enqueue
     (queue_t *,const void *);

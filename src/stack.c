@@ -133,6 +133,54 @@ unsigned int stack_refer_from_top
 	return STACK_SUCCESS;
 }
 
+unsigned int stack_refer_many_elements_from_bottom
+    (stack_t *stack,const size_t offset_a,const size_t offset_b,void *output)
+{
+	if(offset_a >= stack_size(stack) || offset_b >= stack_size(stack)){
+		return STACK_OFFSET_IS_TOO_LARGE;
+	}
+	if(output){
+		size_t offset_small,offset_big;
+		if(offset_a < offset_b){
+			offset_small = offset_a;
+			offset_big = offset_b;
+		}
+		else{
+			offset_small = offset_b;
+			offset_big = offset_a;
+		}
+		memcpy(output,refer_by_offset_from_bottom(stack,offset_small)
+		    ,stack->element_size*(offset_big-offset_small+1));
+	}
+	return STACK_SUCCESS;
+}
+
+unsigned int stack_refer_many_elements_from_top
+    (stack_t *stack,const size_t offset_a,const size_t offset_b,void *output)
+{
+	if(offset_a >= stack_size(stack) || offset_b >= stack_size(stack)){
+		return STACK_OFFSET_IS_TOO_LARGE;
+	}
+	if(output){
+		size_t offset_small,offset_big,area_size,counter = 0;
+		if(offset_a < offset_b){
+			offset_small = offset_a;
+			offset_big = offset_b;
+		}
+		else{
+			offset_small = offset_b;
+			offset_big = offset_a;
+		}
+		area_size = offset_big-offset_small+1;
+		while(counter != area_size){
+			memcpy(output+stack->element_size*counter
+			    ,refer_by_offset_from_top(stack,counter),stack->element_size);
+			counter++;
+		}
+	}
+	return STACK_SUCCESS;
+}
+
 unsigned int stack_push(stack_t *stack,const void *input)
 {
 	void *temp;
