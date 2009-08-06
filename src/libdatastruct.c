@@ -27,6 +27,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include <stdlib.h>
+#include <string.h>
 #include "libdatastruct.h"
 
 void dummy_release_function(void *object)
@@ -38,11 +40,13 @@ unsigned int power_of_two_alignment(unsigned int n)
 {
 	unsigned int result = 1;
 	if(!n){
-		reutrn 0;
+		return 0;
 	}
+	n--;
 	while(n){
 		n = n>>1;
 		result = result<<1;
 	}
 	return result;
 }
+

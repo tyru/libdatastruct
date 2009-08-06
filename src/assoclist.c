@@ -45,19 +45,19 @@
     (hash_function(key,number)&((assoclist)->array_size-1))
 
 #define get_used_flag(assoclist,offset) \
-    ((assoclist)->key_array[offset].used_flag)
+    ((assoclist)->element_info_array[offset].used_flag)
 
 #define get_mode_flag(assoclist,offset) \
-    ((assoclist)->key_array[offset].mode_flag)
+    ((assoclist)->element_info_array[offset].mode_flag)
 
 #define get_hash_type(assoclist,offset) \
-    ((assoclist)->key_array[offset].hash_type)
+    ((assoclist)->element_info_array[offset].hash_type)
 
 #define get_long_key(assoclist,offset) \
-    ((assoclist)->key_array[offset].key.long_key)
+    ((assoclist)->element_info_array[offset].key.long_key)
 
 #define get_short_key(assoclist,offset) \
-    ((assoclist)->key_array[offset].key.short_key)
+    ((assoclist)->element_info_array[offset].key.short_key)
 
 #define get_key(assoclist,offset) \
     (get_mode_flag(assoclist,offset)?get_long_key(assoclist,offset) \
@@ -94,7 +94,7 @@ static unsigned int assoclist_private_lookup(assoclist_t *assoclist
     ,const char *key,size_t *offset)
 {
 	size_t hash_value,counter = 0;
-	while(1){
+	while(counter != HASH_TYPES){
 		hash_value = hash(assoclist,key,counter);
 		if(counter == get_hash_type(assoclist,hash_value)
 		    && compare_key_and_offset(assoclist,key,hash_value)){
@@ -103,35 +103,35 @@ static unsigned int assoclist_private_lookup(assoclist_t *assoclist
 			}
 			return ASSOCLIST_SUCCESS;
 		}
-		if(++counter == HASH_TYPES){
-			return ASSOCLIST_NOT_EXISTENT_KEY;
-		}
+		counter++;
 	}
+	return ASSOCLIST_NOT_EXISTENT_KEY;
 }
 
 static int assoclist_existent(assoclist_t *assoclist,const char *key)
 {
 	size_t hash_value,counter = 0;
-	while(1){
+	while(counter != HASH_TYPES){
 		hash_value = hash(assoclist,key,counter);
 		if(counter == get_hash_type(assoclist,hash_value)
-		    && compare_key_and_offset(assoclist,key,hash_value)
-		    || ++counter == HASH_TYPES){
-			return counter != HASH_TYPES;
+		    && compare_key_and_offset(assoclist,key,hash_value)){
+			return 1;
 		}
+		counter++;
 	}
+	return 0;
 }
 
 static unsigned int assoclist_resize(assoclist_t *assoclist)
 {
 	size_t counter = 0;
 	void *temp;
-	temp = realloc(assoclist->key_array
-	    ,sizeof(key_array_t)*assoclist->array_size*2);
+	temp = realloc(assoclist->element_info_array
+	    ,sizeof(assoclist_element_info_t)*assoclist->array_size*2);
 	if(!temp){
 		return ASSOCLIST_MEMORY_ALLOCATION_ERROR;
 	}
-	assoclist->key_array = temp;
+	assoclist->element_info_array = temp;
 	temp = realloc(assoclist->value_array
 	    ,assoclist->element_size*assoclist->array_size*2);
 	if(!temp){
@@ -142,8 +142,8 @@ static unsigned int assoclist_resize(assoclist_t *assoclist)
 		if(get_used_flag(assoclist,counter)
 		    && (hash_function(get_key(assoclist,counter)
 		    ,get_hash_type(assoclist,counter))&assoclist->array_size)){
-			assoclist->key_array[counter+assoclist->array_size]
-			    = assoclist->key_array[counter];
+			assoclist->element_info_array[counter+assoclist->array_size]
+			    = assoclist->element_info_array[counter];
 			memcpy(get_value(assoclist,counter+assoclist->array_size)
 			    ,get_value(assoclist,counter),assoclist->element_size);
 			get_used_flag(assoclist,counter) = 0;
@@ -173,7 +173,8 @@ static unsigned int assoclist_trymove(assoclist_t *assoclist
 			move_to = hash(assoclist,get_key(assoclist,offset),counter);
 			errcode = assoclist_trymove(assoclist,move_to,nest_counter-1);
 			if(!errcode){
-				assoclist->key_array[move_to] = assoclist->key_array[offset];
+				assoclist->element_info_array[move_to]
+				    = assoclist->element_info_array[offset];
 				get_hash_type(assoclist,move_to) = counter;
 				memcpy(get_value(assoclist,move_to)
 					,get_value(assoclist,offset),assoclist->element_size);
@@ -198,11 +199,11 @@ assoclist_t *assoclist_initialize(const size_t element_size
 	assoclist->array_size = ASSOCLIST_DEFAULT_ARRAY_SIZE;
 	assoclist->release_function = release_function?release_function
 	                                              :dummy_release_function;
-	assoclist->key_array
-	    = calloc(ASSOCLIST_DEFAULT_ARRAY_SIZE,sizeof(key_array_t));
+	assoclist->element_info_array
+	    = calloc(ASSOCLIST_DEFAULT_ARRAY_SIZE,sizeof(assoclist_element_info_t));
 	assoclist->value_array = calloc(ASSOCLIST_DEFAULT_ARRAY_SIZE,element_size);
-	if(!(assoclist->key_array && assoclist->value_array)){
-		free(assoclist->key_array);
+	if(!(assoclist->element_info_array && assoclist->value_array)){
+		free(assoclist->element_info_array);
 		free(assoclist->value_array);
 		free(assoclist);
 		return NULL;
@@ -217,11 +218,11 @@ void assoclist_release(assoclist_t *assoclist)
 		while(counter != assoclist->array_size){
 			if(get_used_flag(assoclist,counter)){
 				free_long_key(assoclist,counter);
-				assoclist->release_function(get_value(assoclist,counter));
+				(*assoclist->release_function)(get_value(assoclist,counter));
 			}
 			counter++;
 		}
-		free(assoclist->key_array);
+		free(assoclist->element_info_array);
 		free(assoclist->value_array);
 		free(assoclist);
 	}
@@ -230,7 +231,7 @@ void assoclist_release(assoclist_t *assoclist)
 unsigned int assoclist_add(assoclist_t *assoclist
     ,const char *key,const void *input)
 {
-	size_t hash_value,counter = 0;
+	size_t hash_value,counter = 0,key_length;
 	unsigned int errcode;
 	if(is_invalid_key(key)){
 		return ASSOCLIST_INVALID_KEY;
@@ -270,16 +271,15 @@ unsigned int assoclist_add(assoclist_t *assoclist
 			}
 		}
 	}
+	key_length = strlen(key);
 	if(get_mode_flag(assoclist,hash_value)
-	    = strlen(key) >= ASSOCLIST_MAX_OF_SHORT_KEY_SIZE){
-		get_long_key(assoclist,hash_value) = strdup(key);
+	    = key_length >= ASSOCLIST_MAX_OF_SHORT_KEY_SIZE){
+		get_long_key(assoclist,hash_value) = malloc(key_length+1);
 		if(!get_long_key(assoclist,hash_value)){
 			return ASSOCLIST_MEMORY_ALLOCATION_ERROR;
 		}
 	}
-	else{
-		strcpy(get_short_key(assoclist,hash_value),key);
-	}
+	memcpy(get_key(assoclist,hash_value),key,key_length+1);
 	get_used_flag(assoclist,hash_value) = 1;
 	get_hash_type(assoclist,hash_value) = counter;
 	memcpy(get_value(assoclist,hash_value),input,assoclist->element_size);
@@ -299,7 +299,7 @@ unsigned int assoclist_reassign(assoclist_t *assoclist
 	if(errcode){
 		return errcode;
 	}
-	assoclist->release_function(get_value(assoclist,offset));
+	(*assoclist->release_function)(get_value(assoclist,offset));
 	memcpy(get_value(assoclist,offset),input,assoclist->element_size);
 	return ASSOCLIST_SUCCESS;
 }
@@ -339,7 +339,7 @@ unsigned int assoclist_remove(assoclist_t *assoclist
 		memcpy(output,get_value(assoclist,offset),assoclist->element_size);
 	}
 	else{
-		assoclist->release_function(get_value(assoclist,offset));
+		(*assoclist->release_function)(get_value(assoclist,offset));
 	}
 	get_used_flag(assoclist,offset) = 0;
 	assoclist->size--;

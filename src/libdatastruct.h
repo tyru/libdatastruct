@@ -125,7 +125,7 @@
 
 /*associative array*/
 
-struct key_array
+struct assoclist_element_info
 {
 	unsigned used_flag:1;
 	unsigned mode_flag:1;
@@ -137,11 +137,11 @@ struct key_array
 	} key;
 };
 
-typedef struct key_array key_array_t;
+typedef struct assoclist_element_info assoclist_element_info_t;
 
 struct assoclist
 {
-	key_array_t *key_array;
+	assoclist_element_info_t *element_info_array;
 	void *value_array;
 	size_t size;
 	size_t element_size;
