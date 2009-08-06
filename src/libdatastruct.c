@@ -33,3 +33,16 @@ void dummy_release_function(void *object)
 {
 	/*empty function*/
 }
+
+unsigned int power_of_two_alignment(unsigned int n)
+{
+	unsigned int result = 1;
+	if(!n){
+		reutrn 0;
+	}
+	while(n){
+		n = n>>1;
+		result = result<<1;
+	}
+	return result;
+}

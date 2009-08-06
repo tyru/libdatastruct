@@ -201,6 +201,8 @@ typedef struct queue queue_t;
 
 extern void dummy_release_function
     (void *);
+extern unsigned int power_of_two_alignment
+    (unsigned int);
 
 /*associative array*/
 
