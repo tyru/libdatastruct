@@ -44,11 +44,20 @@
 #define hash(assoclist,key,number) \
     (hash_function(key,number)&((assoclist)->array_size-1))
 
+#define get_used_flag(element_info) \
+    (element_info->used_flag)
+
 #define get_used_flag_by_offset(assoclist,offset) \
     ((assoclist)->element_info_array[offset].used_flag)
 
+#define get_mode_flag(element_info) \
+    (element_info->used_flag)
+
 #define get_mode_flag_by_offset(assoclist,offset) \
     ((assoclist)->element_info_array[offset].mode_flag)
+
+#define get_hash_type(element_info) \
+    (element_info->hash_type)
 
 #define get_hash_type_by_offset(assoclist,offset) \
     ((assoclist)->element_info_array[offset].hash_type)
