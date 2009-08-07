@@ -44,29 +44,42 @@
 #define hash(assoclist,key,number) \
     (hash_function(key,number)&((assoclist)->array_size-1))
 
+#define get_element_info_by_offset(assoclist,offset) \
+    (&(assoclist)->element_info_array[offset])
+
 #define get_used_flag(element_info) \
-    (element_info->used_flag)
+    ((element_info)->used_flag)
 
 #define get_used_flag_by_offset(assoclist,offset) \
     ((assoclist)->element_info_array[offset].used_flag)
 
 #define get_mode_flag(element_info) \
-    (element_info->used_flag)
+    ((element_info)->used_flag)
 
 #define get_mode_flag_by_offset(assoclist,offset) \
     ((assoclist)->element_info_array[offset].mode_flag)
 
 #define get_hash_type(element_info) \
-    (element_info->hash_type)
+    ((element_info)->hash_type)
 
 #define get_hash_type_by_offset(assoclist,offset) \
     ((assoclist)->element_info_array[offset].hash_type)
 
+#define get_long_key(element_info) \
+    ((element_info)->key.long_key)
+
 #define get_long_key_by_offset(assoclist,offset) \
     ((assoclist)->element_info_array[offset].key.long_key)
 
+#define get_short_key(element_info) \
+    ((element_info)->key.short_key)
+
 #define get_short_key_by_offset(assoclist,offset) \
     ((assoclist)->element_info_array[offset].key.short_key)
+
+#define get_key(element_info) \
+    (get_mode_flag(element_info)?get_long_key(element_info) \
+                                :get_short_key(element_info))
 
 #define get_key_by_offset(assoclist,offset) \
     (get_mode_flag_by_offset(assoclist,offset) \
