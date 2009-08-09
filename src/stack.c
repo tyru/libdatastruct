@@ -186,12 +186,13 @@ unsigned int stack_push(stack_t *stack,const void *input)
 {
 	void *temp;
 	if(stack->size == stack->array_size){
-		temp = realloc(stack->array,(stack->array_size+32)*stack->element_size);
+		temp = realloc(stack->array,(stack->array_size
+		    +STACK_MEMORY_ALLOCATION_UNIT_SIZE)*stack->element_size);
 		if(!temp){
 			return STACK_MEMORY_ALLOCATION_ERROR;
 		}
 		stack->array = temp;
-		stack->array_size = stack->array_size+32;
+		stack->array_size = stack->array_size+STACK_MEMORY_ALLOCATION_UNIT_SIZE;
 	}
 	memcpy(refer_by_offset(stack,stack->size),input,stack->element_size);
 	stack->size++;
@@ -215,13 +216,14 @@ unsigned int stack_push_many_elements
 {
 	void *temp;
 	if(stack->size+push_size > stack->array_size){
-		temp = realloc(stack->array
-		    ,((stack->size+push_size&~31)+32)*stack->element_size);
+		size_t new_size = STACK_MEMORY_ALLOCATION_UNIT_SIZE*((size_t)
+		    ((stack->size+push_size)/STACK_MEMORY_ALLOCATION_UNIT_SIZE)+1);
+		temp = realloc(stack->array,new_size*stack->element_size);
 		if(!temp){
 			return STACK_MEMORY_ALLOCATION_ERROR;
 		}
 		stack->array = temp;
-		stack->array_size = (stack->size+push_size&~31)+32;
+		stack->array_size = new_size;
 	}
 	memcpy(refer_by_offset(stack,stack->size)
 	    ,input,stack->element_size*push_size);

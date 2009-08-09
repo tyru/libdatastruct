@@ -46,13 +46,8 @@
 #define ASSOCLIST_NOT_EXISTENT_KEY                          0x00000008
 #define ASSOCLIST_HASH_COLLISION                            0x00000010
 
-#ifndef ASSOCLIST_MAX_OF_SHORT_KEY_SIZE                     /*overwritable*/
 #define ASSOCLIST_MAX_OF_SHORT_KEY_SIZE                     16
-#endif
-
-#ifndef ASSOCLIST_DEFAULT_ARRAY_SIZE                        /*overwritable*/
 #define ASSOCLIST_DEFAULT_ARRAY_SIZE                        (1<<6)
-#endif
 
 /*double-ended queue*/
 
@@ -61,9 +56,7 @@
 #define DEQUE_EMPTY                                         0x00000002
 #define DEQUE_OFFSET_IS_TOO_LARGE                           0x00000004
 
-#ifndef DEQUE_DEFAULT_ARRAY_SIZE                            /*overwritable*/
 #define DEQUE_DEFAULT_ARRAY_SIZE                            (1<<6)
-#endif
 
 /*stack*/
 
@@ -72,6 +65,8 @@
 #define STACK_EMPTY                                         0x00000002
 #define STACK_OFFSET_IS_TOO_LARGE                           0x00000004
 
+#define STACK_MEMORY_ALLOCATION_UNIT_SIZE                   32
+
 /*queue*/
 
 #define QUEUE_SUCCESS                                       0x00000000
@@ -79,9 +74,7 @@
 #define QUEUE_EMPTY                                         0x00000002
 #define QUEUE_OFFSET_IS_TOO_LARGE                           0x00000004
 
-#ifndef QUEUE_DEFAULT_ARRAY_SIZE                            /*overwritable*/
 #define QUEUE_DEFAULT_ARRAY_SIZE                            (1<<6)
-#endif
 
 /*******************************************************************************
 	Macros
