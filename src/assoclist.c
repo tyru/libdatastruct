@@ -54,7 +54,7 @@
     ((assoclist)->element_info_array[offset].used_flag)
 
 #define get_mode_flag(element_info) \
-    ((element_info)->used_flag)
+    ((element_info)->mode_flag)
 
 #define get_mode_flag_by_offset(assoclist,offset) \
     ((assoclist)->element_info_array[offset].mode_flag)
@@ -86,12 +86,18 @@
         ?get_long_key_by_offset(assoclist,offset) \
         :get_short_key_by_offset(assoclist,offset))
 
+#define free_long_key(element_info) \
+    (get_mode_flag(element_info) && (free(get_long_key(element_info)),1))
+
 #define free_long_key_by_offset(assoclist,offset) \
     (get_mode_flag_by_offset(assoclist,offset) \
     && (free(get_long_key_by_offset(assoclist,offset)),1))
 
 #define get_value_by_offset(assoclist,offset) \
     ((assoclist)->value_array+(assoclist)->element_size*(offset))
+
+#define compare_key_and_element_info(key,element_info) \
+    (get_used_flag(element_info)  && !strcmp(key,get_key(element_info)))
 
 #define compare_key_and_offset(assoclist,key,offset) \
     (get_used_flag_by_offset(assoclist,offset) \
@@ -150,6 +156,7 @@ static unsigned int assoclist_resize(assoclist_t *assoclist)
 {
 	size_t counter = 0;
 	void *temp;
+	assoclist_element_info_t *element_info;
 	temp = realloc(assoclist->element_info_array
 	    ,sizeof(assoclist_element_info_t)*assoclist->array_size*2);
 	if(!temp){
@@ -163,20 +170,18 @@ static unsigned int assoclist_resize(assoclist_t *assoclist)
 	}
 	assoclist->value_array = temp;
 	while(counter != assoclist->array_size){
-		if(get_used_flag_by_offset(assoclist,counter)
-		    && (hash_function(get_key_by_offset(assoclist,counter)
-		    ,get_hash_type_by_offset(assoclist,counter))
-		    &assoclist->array_size)){
-			assoclist->element_info_array[counter+assoclist->array_size]
-			    = assoclist->element_info_array[counter];
+		element_info = get_element_info_by_offset(assoclist,counter);
+		if(get_used_flag(element_info) && (hash_function(get_key(element_info)
+		    ,get_hash_type(element_info))&assoclist->array_size)){
+			*get_element_info_by_offset(assoclist,counter+assoclist->array_size)
+			    = *get_element_info_by_offset(assoclist,counter);
 			memcpy(get_value_by_offset(assoclist,counter+assoclist->array_size)
 			    ,get_value_by_offset(assoclist,counter)
 			    ,assoclist->element_size);
-			get_used_flag_by_offset(assoclist,counter) = 0;
+			get_used_flag(element_info) = 0;
 		}
 		else{
-			get_used_flag_by_offset(assoclist,counter+assoclist->array_size)
-			    = 0;
+			get_used_flag(element_info+assoclist->array_size) = 0;
 		}
 		counter++;
 	}
@@ -189,27 +194,26 @@ static unsigned int assoclist_trymove(assoclist_t *assoclist
 {
 	size_t move_to,counter = 0;
 	unsigned int errcode;
-	assoclist_element_info_t *current_info
-	    = &assoclist->element_info_array[offset];
-	if(!get_used_flag_by_offset(assoclist,offset)){
+	assoclist_element_info_t *element_info
+	    = get_element_info_by_offset(assoclist,offset);
+	if(!get_used_flag(element_info)){
 		return ASSOCLIST_SUCCESS;
 	}
 	if(!nest_counter){
 		return ASSOCLIST_HASH_COLLISION;
 	}
 	while(counter != HASH_TYPES){
-		if(counter != get_hash_type_by_offset(assoclist,offset)){
-			move_to
-			    = hash(assoclist,get_key_by_offset(assoclist,offset),counter);
+		if(counter != get_hash_type(element_info)){
+			move_to = hash(assoclist,get_key(element_info),counter);
 			errcode = assoclist_trymove(assoclist,move_to,nest_counter-1);
 			if(!errcode){
-				assoclist->element_info_array[move_to]
-				    = assoclist->element_info_array[offset];
+				*get_element_info_by_offset(assoclist,move_to)
+				    = *get_element_info_by_offset(assoclist,offset);
 				get_hash_type_by_offset(assoclist,move_to) = counter;
 				memcpy(get_value_by_offset(assoclist,move_to)
 					,get_value_by_offset(assoclist,offset)
 				    ,assoclist->element_size);
-				get_used_flag_by_offset(assoclist,offset) = 0;
+				get_used_flag(element_info) = 0;
 				return ASSOCLIST_SUCCESS;
 			}
 		}
@@ -245,10 +249,12 @@ assoclist_t *assoclist_initialize(const size_t element_size
 void assoclist_release(assoclist_t *assoclist)
 {
 	size_t counter = 0;
+	assoclist_element_info_t *element_info;
 	if(assoclist){
 		while(counter != assoclist->array_size){
-			if(get_used_flag_by_offset(assoclist,counter)){
-				free_long_key_by_offset(assoclist,counter);
+			element_info = get_element_info_by_offset(assoclist,counter);
+			if(get_used_flag(element_info)){
+				free_long_key(element_info);
 				(*assoclist->release_function)
 				    (get_value_by_offset(assoclist,counter));
 			}
@@ -265,6 +271,7 @@ unsigned int assoclist_add(assoclist_t *assoclist
 {
 	size_t hash_value,counter = 0,key_length;
 	unsigned int errcode;
+	assoclist_element_info_t *element_info;
 	if(is_invalid_key(key)){
 		return ASSOCLIST_INVALID_KEY;
 	}
@@ -304,16 +311,17 @@ unsigned int assoclist_add(assoclist_t *assoclist
 		}
 	}
 	key_length = strlen(key);
-	if(get_mode_flag_by_offset(assoclist,hash_value)
+	element_info = get_element_info_by_offset(assoclist,hash_value);
+	if(get_mode_flag(element_info)
 	    = key_length >= ASSOCLIST_MAX_OF_SHORT_KEY_SIZE){
-		get_long_key_by_offset(assoclist,hash_value) = malloc(key_length+1);
-		if(!get_long_key_by_offset(assoclist,hash_value)){
+		get_long_key(element_info) = malloc(key_length+1);
+		if(!get_long_key(element_info)){
 			return ASSOCLIST_MEMORY_ALLOCATION_ERROR;
 		}
 	}
-	memcpy(get_key_by_offset(assoclist,hash_value),key,key_length+1);
-	get_used_flag_by_offset(assoclist,hash_value) = 1;
-	get_hash_type_by_offset(assoclist,hash_value) = counter;
+	memcpy(get_key(element_info),key,key_length+1);
+	get_used_flag(element_info) = 1;
+	get_hash_type(element_info) = counter;
 	memcpy(get_value_by_offset(assoclist,hash_value)
 	    ,input,assoclist->element_size);
 	assoclist->size++;
@@ -361,6 +369,7 @@ unsigned int assoclist_remove(assoclist_t *assoclist
 {
 	size_t offset;
 	unsigned int errcode;
+	assoclist_element_info_t *element_info;
 	if(is_invalid_key(key)){
 		return ASSOCLIST_INVALID_KEY;
 	}
@@ -368,7 +377,8 @@ unsigned int assoclist_remove(assoclist_t *assoclist
 	if(errcode){
 		return errcode;
 	}
-	free_long_key_by_offset(assoclist,offset);
+	element_info = get_element_info_by_offset(assoclist,offset);
+	free_long_key(element_info);
 	if(output){
 		memcpy(output
 		    ,get_value_by_offset(assoclist,offset),assoclist->element_size);
@@ -376,7 +386,7 @@ unsigned int assoclist_remove(assoclist_t *assoclist
 	else{
 		(*assoclist->release_function)(get_value_by_offset(assoclist,offset));
 	}
-	get_used_flag_by_offset(assoclist,offset) = 0;
+	get_used_flag(element_info) = 0;
 	assoclist->size--;
 	return ASSOCLIST_SUCCESS;
 }
