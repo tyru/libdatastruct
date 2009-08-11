@@ -118,7 +118,7 @@
 
 /*associative array*/
 
-struct assoclist_element_info
+typedef struct assoclist_element_info
 {
 	unsigned used_flag:1;
 	unsigned mode_flag:1;
@@ -128,11 +128,9 @@ struct assoclist_element_info
 		char *long_key;
 		char short_key[ASSOCLIST_MAX_OF_SHORT_KEY_SIZE];
 	} key;
-};
+} assoclist_element_info_t;
 
-typedef struct assoclist_element_info assoclist_element_info_t;
-
-struct assoclist
+typedef struct assoclist
 {
 	assoclist_element_info_t *element_info_array;
 	void *value_array;
@@ -140,13 +138,11 @@ struct assoclist
 	size_t element_size;
 	size_t array_size;
 	void (*release_function)(void *);
-};
-
-typedef struct assoclist assoclist_t;
+} assoclist_t;
 
 /*double-ended queue*/
 
-struct deque
+typedef struct deque
 {
 	void *array;
 	size_t size;
@@ -154,13 +150,11 @@ struct deque
 	size_t array_size;
 	size_t head;
 	void (*release_function)(void *);
-};
-
-typedef struct deque deque_t;
+} deque_t;
 
 /*stack*/
 
-struct stack
+typedef struct stack
 {
 	void *array;
 	size_t size;
@@ -168,13 +162,11 @@ struct stack
 	size_t array_size;
 	size_t head;
 	void (*release_function)(void *);
-};
-
-typedef struct stack stack_t;
+} stack_t;
 
 /*queue*/
 
-struct queue
+typedef struct queue
 {
 	void *array;
 	size_t size;
@@ -182,9 +174,7 @@ struct queue
 	size_t array_size;
 	size_t head;
 	void (*release_function)(void *);
-};
-
-typedef struct queue queue_t;
+} queue_t;
 
 /*******************************************************************************
 	Functions
