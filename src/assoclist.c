@@ -103,9 +103,6 @@
     (get_used_flag_by_offset(assoclist,offset) \
     && !strcmp(key,get_key_by_offset(assoclist,offset)))
 
-#define is_invalid_key(key) \
-    (!(key))
-
 /*******************************************************************************
 	Functions
 *******************************************************************************/
@@ -203,7 +200,8 @@ static unsigned int assoclist_trymove(assoclist_t *assoclist
 	while(counter != HASH_TYPES){
 		if(counter != get_hash_type(element_info)){
 			size_t move_to = hash(assoclist,get_key(element_info),counter);
-			unsigned int errcode = assoclist_trymove(assoclist,move_to,nest_counter-1);
+			unsigned int errcode
+			    = assoclist_trymove(assoclist,move_to,nest_counter-1);
 			if(!errcode){
 				*get_element_info_by_offset(assoclist,move_to)
 				    = *get_element_info_by_offset(assoclist,offset);
@@ -270,7 +268,7 @@ unsigned int assoclist_add(assoclist_t *assoclist
 	size_t hash_value,counter = 0,key_length;
 	unsigned int errcode;
 	assoclist_element_info_t *element_info;
-	if(is_invalid_key(key)){
+	if(!key){
 		return ASSOCLIST_INVALID_KEY;
 	}
 	if(assoclist_existent(assoclist,key)){
@@ -291,22 +289,20 @@ unsigned int assoclist_add(assoclist_t *assoclist
 		counter++;
 	}
 	if(counter == HASH_TYPES){
+		errcode = assoclist_resize(assoclist);
 		if(errcode){
-			errcode = assoclist_resize(assoclist);
-			if(errcode){
-				return errcode;
+			return errcode;
+		}
+		counter = 0;
+		while(1){
+			hash_value = hash(assoclist,key,counter);
+			errcode = assoclist_trymove(assoclist,hash_value,4);
+			if(!errcode){
+				break;
 			}
-			counter = 0;
-			while(1){
-				hash_value = hash(assoclist,key,counter);
-				errcode = assoclist_trymove(assoclist,hash_value,4);
-				if(!errcode){
-					break;
-				}
-				counter++;
-				if(counter == HASH_TYPES){
-					return ASSOCLIST_HASH_COLLISION;
-				}
+			counter++;
+			if(counter == HASH_TYPES){
+				return ASSOCLIST_HASH_COLLISION;
 			}
 		}
 	}
@@ -333,7 +329,7 @@ unsigned int assoclist_reassign(assoclist_t *assoclist
 {
 	size_t offset;
 	unsigned int errcode;
-	if(is_invalid_key(key)){
+	if(!key){
 		return ASSOCLIST_INVALID_KEY;
 	}
 	errcode = assoclist_private_lookup(assoclist,key,&offset);
@@ -350,7 +346,7 @@ unsigned int assoclist_lookup(assoclist_t *assoclist
 {
 	size_t offset;
 	unsigned int errcode;
-	if(is_invalid_key(key)){
+	if(!key){
 		return ASSOCLIST_INVALID_KEY;
 	}
 	errcode = assoclist_private_lookup(assoclist,key,&offset);
@@ -370,7 +366,7 @@ unsigned int assoclist_remove(assoclist_t *assoclist
 	size_t offset;
 	unsigned int errcode;
 	assoclist_element_info_t *element_info;
-	if(is_invalid_key(key)){
+	if(!key){
 		return ASSOCLIST_INVALID_KEY;
 	}
 	errcode = assoclist_private_lookup(assoclist,key,&offset);

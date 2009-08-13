@@ -70,9 +70,9 @@ int main(void)
 		}
 		counter++;
 	}
-	fprintf(stdout,"insert : %d/%d\n",clock()-time,CLOCKS_PER_SEC);
-	time = clock();
+	fprintf(stdout,"insert : %fs\n",(double)(clock()-time)/CLOCKS_PER_SEC);
 	counter = 0;
+	time = clock();
 	while(counter != (1<<24)){
 		errcode = assoclist_lookup(assoclist,integer_to_string(counter),&temp);
 		if(errcode){
@@ -80,7 +80,7 @@ int main(void)
 		}
 		counter++;
 	}
-	fprintf(stdout,"find   : %d/%d\n",clock()-time,CLOCKS_PER_SEC);
+	fprintf(stdout,"find   : %fs\n",(double)(clock()-time)/CLOCKS_PER_SEC);
 	assoclist_release(assoclist);
 	return 0;
 }
