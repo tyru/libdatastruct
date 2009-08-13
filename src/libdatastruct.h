@@ -140,7 +140,7 @@ typedef struct assoclist
 	void (*release_function)(void *);
 } assoclist_t;
 
-/*double-ended queue*/
+/*double-ended queue,queue*/
 
 typedef struct deque
 {
@@ -151,6 +151,8 @@ typedef struct deque
 	size_t head;
 	void (*release_function)(void *);
 } deque_t;
+
+typedef deque_t queue_t;
 
 /*stack*/
 
@@ -163,18 +165,6 @@ typedef struct stack
 	size_t head;
 	void (*release_function)(void *);
 } stack_t;
-
-/*queue*/
-
-typedef struct queue
-{
-	void *array;
-	size_t size;
-	size_t element_size;
-	size_t array_size;
-	size_t head;
-	void (*release_function)(void *);
-} queue_t;
 
 /*******************************************************************************
 	Functions

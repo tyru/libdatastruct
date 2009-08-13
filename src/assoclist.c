@@ -104,7 +104,7 @@
     && !strcmp(key,get_key_by_offset(assoclist,offset)))
 
 #define is_invalid_key(key) \
-    (!(key) || !(key)[0])
+    (!(key))
 
 /*******************************************************************************
 	Functions
@@ -155,10 +155,9 @@ static int assoclist_existent(assoclist_t *assoclist,const char *key)
 static unsigned int assoclist_resize(assoclist_t *assoclist)
 {
 	size_t counter = 0;
-	void *temp;
-	assoclist_element_info_t *element_info;
-	temp = realloc(assoclist->element_info_array
+	void *temp = realloc(assoclist->element_info_array
 	    ,sizeof(assoclist_element_info_t)*assoclist->array_size*2);
+	assoclist_element_info_t *element_info;
 	if(!temp){
 		return ASSOCLIST_MEMORY_ALLOCATION_ERROR;
 	}
@@ -192,8 +191,7 @@ static unsigned int assoclist_resize(assoclist_t *assoclist)
 static unsigned int assoclist_trymove(assoclist_t *assoclist
     ,size_t offset,unsigned int nest_counter)
 {
-	size_t move_to,counter = 0;
-	unsigned int errcode;
+	size_t counter = 0;
 	assoclist_element_info_t *element_info
 	    = get_element_info_by_offset(assoclist,offset);
 	if(!get_used_flag(element_info)){
@@ -204,8 +202,8 @@ static unsigned int assoclist_trymove(assoclist_t *assoclist
 	}
 	while(counter != HASH_TYPES){
 		if(counter != get_hash_type(element_info)){
-			move_to = hash(assoclist,get_key(element_info),counter);
-			errcode = assoclist_trymove(assoclist,move_to,nest_counter-1);
+			size_t move_to = hash(assoclist,get_key(element_info),counter);
+			unsigned int errcode = assoclist_trymove(assoclist,move_to,nest_counter-1);
 			if(!errcode){
 				*get_element_info_by_offset(assoclist,move_to)
 				    = *get_element_info_by_offset(assoclist,offset);
@@ -248,14 +246,14 @@ assoclist_t *assoclist_initialize(const size_t element_size
 
 void assoclist_release(assoclist_t *assoclist)
 {
-	size_t counter = 0;
-	assoclist_element_info_t *element_info;
 	if(assoclist){
+		size_t counter = 0;
 		while(counter != assoclist->array_size){
-			element_info = get_element_info_by_offset(assoclist,counter);
+			assoclist_element_info_t *element_info
+			    = get_element_info_by_offset(assoclist,counter);
 			if(get_used_flag(element_info)){
 				free_long_key(element_info);
-				(*assoclist->release_function)
+				assoclist->release_function
 				    (get_value_by_offset(assoclist,counter));
 			}
 			counter++;
@@ -285,28 +283,30 @@ unsigned int assoclist_add(assoclist_t *assoclist
 		}
 	}
 	while(counter != HASH_TYPES){
-		hash_value = hash(assoclist,key,counter);
-		errcode = assoclist_trymove(assoclist,hash_value,2);
+		errcode = assoclist_trymove
+		    (assoclist,hash_value = hash(assoclist,key,counter),2);
 		if(!errcode){
 			break;
 		}
 		counter++;
 	}
-	if(errcode){
-		errcode = assoclist_resize(assoclist);
+	if(counter == HASH_TYPES){
 		if(errcode){
-			return errcode;
-		}
-		counter = 0;
-		while(1){
-			hash_value = hash(assoclist,key,counter);
-			errcode = assoclist_trymove(assoclist,hash_value,4);
-			if(!errcode){
-				break;
+			errcode = assoclist_resize(assoclist);
+			if(errcode){
+				return errcode;
 			}
-			counter++;
-			if(counter == HASH_TYPES){
-				return ASSOCLIST_HASH_COLLISION;
+			counter = 0;
+			while(1){
+				hash_value = hash(assoclist,key,counter);
+				errcode = assoclist_trymove(assoclist,hash_value,4);
+				if(!errcode){
+					break;
+				}
+				counter++;
+				if(counter == HASH_TYPES){
+					return ASSOCLIST_HASH_COLLISION;
+				}
 			}
 		}
 	}
@@ -340,7 +340,7 @@ unsigned int assoclist_reassign(assoclist_t *assoclist
 	if(errcode){
 		return errcode;
 	}
-	(*assoclist->release_function)(get_value_by_offset(assoclist,offset));
+	assoclist->release_function(get_value_by_offset(assoclist,offset));
 	memcpy(get_value_by_offset(assoclist,offset),input,assoclist->element_size);
 	return ASSOCLIST_SUCCESS;
 }
@@ -384,7 +384,7 @@ unsigned int assoclist_remove(assoclist_t *assoclist
 		    ,get_value_by_offset(assoclist,offset),assoclist->element_size);
 	}
 	else{
-		(*assoclist->release_function)(get_value_by_offset(assoclist,offset));
+		assoclist->release_function(get_value_by_offset(assoclist,offset));
 	}
 	get_used_flag(element_info) = 0;
 	assoclist->size--;

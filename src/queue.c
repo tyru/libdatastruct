@@ -77,8 +77,8 @@ queue_t *queue_initialize(const size_t element_size
 
 void queue_release(queue_t *queue)
 {
-	size_t counter = 0;
 	if(queue){
+		size_t counter = 0;
 		while(counter != queue->size){
 			queue->release_function(refer_by_offset_from_front(queue,counter));
 			counter++;
@@ -113,7 +113,7 @@ unsigned int queue_back(queue_t *queue,void *output)
 unsigned int queue_refer_from_front
     (queue_t *queue,const size_t offset,void *output)
 {
-	if(offset >= queue_size(queue)){
+	if(offset >= queue->size){
 		return QUEUE_OFFSET_IS_TOO_LARGE;
 	}
 	if(output){
@@ -126,7 +126,7 @@ unsigned int queue_refer_from_front
 unsigned int queue_refer_from_back
     (queue_t *queue,const size_t offset,void *output)
 {
-	if(offset >= queue_size(queue)){
+	if(offset >= queue->size){
 		return QUEUE_OFFSET_IS_TOO_LARGE;
 	}
 	if(output){
@@ -138,10 +138,9 @@ unsigned int queue_refer_from_back
 
 unsigned int queue_enqueue(queue_t *queue,const void *input)
 {
-	void *temp;
 	if(queue->head+queue->size <= queue->array_size
 	    && queue->array_size*3 <= queue->size*4){
-		temp = realloc(queue->array,queue->element_size*queue->array_size*2);
+		void *temp = realloc(queue->array,queue->element_size*queue->array_size*2);
 		if(!temp && queue->size == queue->array_size){
 			return QUEUE_MEMORY_ALLOCATION_ERROR;
 		}
@@ -151,7 +150,7 @@ unsigned int queue_enqueue(queue_t *queue,const void *input)
 		}
 	}
 	else if(queue->size == queue->array_size){
-		temp = realloc(queue->array,queue->element_size*queue->array_size*2);
+		void *temp = realloc(queue->array,queue->element_size*queue->array_size*2);
 		if(!temp){
 			return QUEUE_MEMORY_ALLOCATION_ERROR;
 		}
@@ -176,5 +175,16 @@ unsigned int queue_dequeue(queue_t *queue,void *output)
 	}
 	queue->head = (queue->head+1)%queue->array_size;
 	queue->size--;
+	/*
+	if(queue->size <= queue->array_size/4 && queue->head <= queue->array_size/2
+	    && queue->head+queue->size <= queue->array_size/2
+	    && QUEUE_DEFAULT_ARRAY_SIZE < queue->array_size){
+		void *temp = realloc(queue->array,queue->array_size/2);
+		if(temp){
+			queue->array = temp;
+			queue->array_size = queue->array_size/2;
+		}
+	}
+	*/
 	return QUEUE_SUCCESS;
 }
