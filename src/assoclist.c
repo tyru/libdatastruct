@@ -41,6 +41,9 @@
 	Macros
 *******************************************************************************/
 
+#define void_pointer_addition(pointer,number) \
+    ((void *)((char *)pointer+number))
+
 #define hash(assoclist,key,number) \
     (hash_function(key,number)&((assoclist)->array_size-1))
 
@@ -94,7 +97,8 @@
     && (free(get_long_key_by_offset(assoclist,offset)),1))
 
 #define get_value_by_offset(assoclist,offset) \
-    ((assoclist)->value_array+(assoclist)->element_size*(offset))
+    (void_pointer_addition((assoclist)->value_array \
+    ,(assoclist)->element_size*(offset)))
 
 #define compare_key_and_element_info(key,element_info) \
     (get_used_flag(element_info)  && !strcmp(key,get_key(element_info)))
@@ -308,8 +312,8 @@ unsigned int assoclist_add(assoclist_t *assoclist
 	}
 	key_length = strlen(key);
 	element_info = get_element_info_by_offset(assoclist,hash_value);
-	if(get_mode_flag(element_info)
-	    = key_length >= ASSOCLIST_MAX_OF_SHORT_KEY_SIZE){
+	get_mode_flag(element_info) = key_length >= ASSOCLIST_MAX_OF_SHORT_KEY_SIZE;
+	if(get_mode_flag(element_info)){
 		get_long_key(element_info) = malloc(key_length+1);
 		if(!get_long_key(element_info)){
 			return ASSOCLIST_MEMORY_ALLOCATION_ERROR;

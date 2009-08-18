@@ -35,8 +35,11 @@
 	Macros
 *******************************************************************************/
 
+#define void_pointer_addition(pointer,number) \
+    ((void *)((char *)pointer+number))
+
 #define refer_by_offset(stack,offset) \
-    ((stack)->array+(stack)->element_size*(offset))
+    (void_pointer_addition((stack)->array,(stack)->element_size*(offset)))
 
 #define refer_by_offset_from_bottom(stack,offset) \
     (refer_by_offset((stack),(offset)))
@@ -48,7 +51,7 @@
     ((stack)->array)
 
 #define refer_top(stack) \
-    refer_by_offset((stack),(stack)->size)
+    refer_by_offset((stack),(stack)->size-1)
 
 /*******************************************************************************
 	Functions
@@ -173,7 +176,7 @@ unsigned int stack_refer_many_elements_from_top
 		}
 		area_size = offset_big-offset_small+1;
 		while(counter != area_size){
-			memcpy(output+stack->element_size*counter
+			memcpy(void_pointer_addition(output,stack->element_size*counter)
 			    ,refer_by_offset_from_top(stack,offset_small+counter)
 			    ,stack->element_size);
 			counter++;
@@ -238,7 +241,8 @@ unsigned int stack_pop_many_elements
 	if(output){
 		size_t counter = pop_size;
 		while(counter){
-			memcpy(output+stack->element_size*(pop_size-counter)
+			memcpy(void_pointer_addition(output
+			    ,stack->element_size*(pop_size-counter))
 			    ,refer_by_offset_from_top(stack,pop_size-counter)
 			    ,stack->element_size);
 			counter--;

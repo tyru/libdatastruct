@@ -35,8 +35,12 @@
 	Macros
 *******************************************************************************/
 
+#define void_pointer_addition(pointer,number) \
+    ((void *)((char *)pointer+number))
+
 #define refer_by_offset(deque,offset) \
-    ((deque)->array+(deque)->element_size*((offset)%(deque)->array_size))
+    (void_pointer_addition((deque)->array \
+    ,(deque)->element_size*((offset)%(deque)->array_size)))
 
 #define refer_by_offset_from_front(deque,offset) \
     refer_by_offset((deque),(deque)->head+(offset))
@@ -140,7 +144,8 @@ unsigned int deque_push_front(deque_t *deque,const void *input)
 {
 	if(deque->head+deque->size <= deque->array_size
 	    && deque->array_size*3 <= deque->size*4){
-		void *temp = realloc(deque->array,deque->element_size*deque->array_size*2);
+		void *temp
+		    = realloc(deque->array,deque->element_size*deque->array_size*2);
 		if(!temp && deque->size == deque->array_size){
 			return DEQUE_MEMORY_ALLOCATION_ERROR;
 		}
@@ -150,12 +155,14 @@ unsigned int deque_push_front(deque_t *deque,const void *input)
 		}
 	}
 	if(deque->array_size == deque->size){
-		void *temp = realloc(deque->array,deque->element_size*deque->array_size*2);
+		void *temp
+		    = realloc(deque->array,deque->element_size*deque->array_size*2);
 		if(!temp){
 			return DEQUE_MEMORY_ALLOCATION_ERROR;
 		}
 		deque->array = temp;
-		memcpy(deque->array+deque->element_size*deque->array_size
+		memcpy(void_pointer_addition(deque->array
+		    ,deque->element_size*deque->array_size)
 		    ,deque->array,deque->element_size*deque->head);
 		deque->array_size = deque->array_size*2;
 	}
@@ -169,7 +176,8 @@ unsigned int deque_push_back(deque_t *deque,const void *input)
 {
 	if(deque->head+deque->size <= deque->array_size
 	    && deque->array_size*3 <= deque->size*4){
-		void *temp = realloc(deque->array,deque->element_size*deque->array_size*2);
+		void *temp
+		    = realloc(deque->array,deque->element_size*deque->array_size*2);
 		if(!temp && deque->size == deque->array_size){
 			return DEQUE_MEMORY_ALLOCATION_ERROR;
 		}
@@ -179,12 +187,14 @@ unsigned int deque_push_back(deque_t *deque,const void *input)
 		}
 	}
 	if(deque->array_size == deque->size){
-		void *temp = realloc(deque->array,deque->element_size*deque->array_size*2);
+		void *temp
+		    = realloc(deque->array,deque->element_size*deque->array_size*2);
 		if(!temp){
 			return DEQUE_MEMORY_ALLOCATION_ERROR;
 		}
 		deque->array = temp;
-		memcpy(deque->array+deque->element_size*deque->array_size
+		memcpy(void_pointer_addition(deque->array
+		    ,deque->element_size*deque->array_size)
 		    ,deque->array,deque->element_size*deque->head);
 		deque->array_size = deque->array_size*2;
 	}

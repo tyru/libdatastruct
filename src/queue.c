@@ -35,8 +35,12 @@
 	Macros
 *******************************************************************************/
 
+#define void_pointer_addition(pointer,number) \
+    ((void *)((char *)pointer+number))
+
 #define refer_by_offset(queue,offset) \
-    ((queue)->array+(queue)->element_size*((offset)%(queue)->array_size))
+    (void_pointer_addition((queue)->array \
+    ,(queue)->element_size*((offset)%(queue)->array_size)))
 
 #define refer_by_offset_from_front(queue,offset) \
     refer_by_offset((queue),(queue)->head+(offset))
@@ -140,7 +144,8 @@ unsigned int queue_enqueue(queue_t *queue,const void *input)
 {
 	if(queue->head+queue->size <= queue->array_size
 	    && queue->array_size*3 <= queue->size*4){
-		void *temp = realloc(queue->array,queue->element_size*queue->array_size*2);
+		void *temp
+		    = realloc(queue->array,queue->element_size*queue->array_size*2);
 		if(!temp && queue->size == queue->array_size){
 			return QUEUE_MEMORY_ALLOCATION_ERROR;
 		}
@@ -150,12 +155,14 @@ unsigned int queue_enqueue(queue_t *queue,const void *input)
 		}
 	}
 	else if(queue->size == queue->array_size){
-		void *temp = realloc(queue->array,queue->element_size*queue->array_size*2);
+		void *temp
+		    = realloc(queue->array,queue->element_size*queue->array_size*2);
 		if(!temp){
 			return QUEUE_MEMORY_ALLOCATION_ERROR;
 		}
 		queue->array = temp;
-		memcpy(queue->array+queue->element_size*queue->array_size
+		memcpy(void_pointer_addition(queue->array
+		    ,queue->element_size*queue->array_size)
 		    ,queue->array,queue->element_size*queue->head);
 		queue->array_size = queue->array_size*2;
 	}
