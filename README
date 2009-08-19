@@ -1,0 +1,25 @@
+
+* libdatastruct
+
+Abstract data types for C Programming Language.
+
+** Description
+
+This is a ANSI C library for Abstract data types.
+
+** Functions
+
+This library implements the following functions.
+
+- Associative array
+- stack
+- queue
+- double-ended queue (deque)
+
+** Lisence
+
+This program is licensed by the BSD License.
+
+** Author
+
+Kazuhiko Sakaguchi <pi8027@gmail.com>
