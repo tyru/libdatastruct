@@ -2,7 +2,7 @@
 /*
  * Test code for the stack data structure
  * Copyright (c) 2009, Kazuhiko Sakaguchi All rights reserved.
- * This file is part of the LibDataStruct.
+ * This file is part of the libdatastruct.
  * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
