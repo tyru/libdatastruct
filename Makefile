@@ -33,6 +33,10 @@ obj/test/assoclist/2.o : src/test/assoclist/2.c src/libdatastruct.h
 	mkdir -p obj/test/assoclist/
 	$(CC) -o $@ -c src/test/assoclist/2.c
 
+obj/test/assoclist/3.o : src/test/assoclist/3.c src/libdatastruct.h
+	mkdir -p obj/test/assoclist/
+	$(CC) -o $@ -c src/test/assoclist/3.c
+
 obj/test/deque/1.o : src/test/deque/1.c src/libdatastruct.h
 	mkdir -p obj/test/deque/
 	$(CC) -o $@ -c src/test/deque/1.c
@@ -70,6 +74,10 @@ bin/assoclist/1 : obj/libdatastruct.o obj/assoclist.o obj/test/assoclist/1.o
 	$(CC) -o $@ $^
 
 bin/assoclist/2 : obj/libdatastruct.o obj/assoclist.o obj/test/assoclist/2.o
+	mkdir -p bin/assoclist/
+	$(CC) -o $@ $^
+
+bin/assoclist/3 : obj/libdatastruct.o obj/assoclist.o obj/test/assoclist/3.o
 	mkdir -p bin/assoclist/
 	$(CC) -o $@ $^
 

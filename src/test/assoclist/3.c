@@ -27,15 +27,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <assert.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <time.h>
 #include "../../libdatastruct.h"
-
-void free_object(void *pointer)
-{
-	free(*(void **)pointer);
-}
 
 char *integer_to_string(unsigned int integer)
 {
@@ -60,34 +54,33 @@ int main(void)
 	assoclist_t *assoclist;
 	unsigned int errcode;
 	size_t counter = 0;
-	void *pointer;
-	void *checkbuf[65536];
-	assoclist = assoclist_initialize(sizeof(void *),free_object);
+	size_t temp;
+	clock_t time;
+	assoclist = assoclist_initialize(sizeof(size_t),NULL);
 	if(!assoclist){
+		fputs("Error!\n",stderr);
 		return -1;
 	}
-	while(counter != 65536){
-		pointer = malloc(1);
-		checkbuf[counter] = pointer;
-		errcode = assoclist_add(assoclist,integer_to_string(counter),&pointer);
+	time = clock();
+	while(counter != (1<<24)){
+		errcode = assoclist_add(assoclist,integer_to_string(counter),&counter);
 		if(errcode){
 			fputs("Error!\n",stderr);
 			return -1;
 		}
-		fprintf(stdout,"add : %s,%d\n",integer_to_string(counter),pointer);
 		counter++;
 	}
+	fprintf(stdout,"insert : %fs\n",(double)(clock()-time)/CLOCKS_PER_SEC);
 	counter = 0;
-	while(counter != 65536){
-		errcode = assoclist_lookup(assoclist
-		    ,integer_to_string(counter),&pointer);
+	time = clock();
+	while(counter != (1<<24)){
+		errcode = assoclist_lookup(assoclist,integer_to_string(counter),&temp);
 		if(errcode){
 			fputs("Error!\n",stderr);
 		}
-		fprintf(stdout,"find : %s,%d\n",integer_to_string(counter),pointer);
-		assert(checkbuf[counter] == pointer);
 		counter++;
 	}
+	fprintf(stdout,"find   : %fs\n",(double)(clock()-time)/CLOCKS_PER_SEC);
 	assoclist_release(assoclist);
 	return 0;
 }

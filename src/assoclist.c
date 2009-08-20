@@ -124,68 +124,53 @@ static size_t hash_function(const char *string,size_t num)
 static unsigned int assoclist_private_lookup(assoclist_t *assoclist
     ,const char *key,size_t *offset)
 {
-	size_t hash_value,counter = 0;
-	while(counter != HASH_TYPES){
-		hash_value = hash(assoclist,key,counter);
-		if(counter == get_hash_type_by_offset(assoclist,hash_value)
+	size_t hash_value,hash_id = 0;
+	while(hash_id != HASH_TYPES){
+		hash_value = hash(assoclist,key,hash_id);
+		if(hash_id == get_hash_type_by_offset(assoclist,hash_value)
 		    && compare_key_and_offset(assoclist,key,hash_value)){
 			if(offset){
 				*offset = hash_value;
 			}
 			return ASSOCLIST_SUCCESS;
 		}
-		counter++;
+		hash_id++;
 	}
 	return ASSOCLIST_NOT_EXISTENT_KEY;
 }
 
-static int assoclist_existent(assoclist_t *assoclist,const char *key)
-{
-	size_t hash_value,counter = 0;
-	while(counter != HASH_TYPES){
-		hash_value = hash(assoclist,key,counter);
-		if(counter == get_hash_type_by_offset(assoclist,hash_value)
-		    && compare_key_and_offset(assoclist,key,hash_value)){
-			return 1;
-		}
-		counter++;
-	}
-	return 0;
-}
-
 static unsigned int assoclist_resize(assoclist_t *assoclist)
 {
-	size_t counter = 0;
+	size_t element_counter = 0,array_size = assoclist->array_size;
 	void *temp = realloc(assoclist->element_info_array
-	    ,sizeof(assoclist_element_info_t)*assoclist->array_size*2);
+	    ,sizeof(assoclist_element_info_t)*array_size*2);
 	assoclist_element_info_t *element_info;
 	if(!temp){
 		return ASSOCLIST_MEMORY_ALLOCATION_ERROR;
 	}
 	assoclist->element_info_array = temp;
-	temp = realloc(assoclist->value_array
-	    ,assoclist->element_size*assoclist->array_size*2);
+	temp = realloc(assoclist->value_array,assoclist->element_size*array_size*2);
 	if(!temp){
 		return ASSOCLIST_MEMORY_ALLOCATION_ERROR;
 	}
 	assoclist->value_array = temp;
-	while(counter != assoclist->array_size){
-		element_info = get_element_info_by_offset(assoclist,counter);
+	while(element_counter != array_size){
+		element_info = get_element_info_by_offset(assoclist,element_counter);
 		if(get_used_flag(element_info) && (hash_function(get_key(element_info)
-		    ,get_hash_type(element_info))&assoclist->array_size)){
-			*get_element_info_by_offset(assoclist,counter+assoclist->array_size)
-			    = *get_element_info_by_offset(assoclist,counter);
-			memcpy(get_value_by_offset(assoclist,counter+assoclist->array_size)
-			    ,get_value_by_offset(assoclist,counter)
+		    ,get_hash_type(element_info))&array_size)){
+			*get_element_info_by_offset(assoclist,element_counter+array_size)
+			    = *get_element_info_by_offset(assoclist,element_counter);
+			memcpy(get_value_by_offset(assoclist,element_counter+array_size)
+			    ,get_value_by_offset(assoclist,element_counter)
 			    ,assoclist->element_size);
 			get_used_flag(element_info) = 0;
 		}
 		else{
-			get_used_flag(element_info+assoclist->array_size) = 0;
+			get_used_flag(element_info+array_size) = 0;
 		}
-		counter++;
+		element_counter++;
 	}
-	assoclist->array_size = assoclist->array_size*2;
+	assoclist->array_size = array_size*2;
 	return ASSOCLIST_SUCCESS;
 }
 
@@ -202,20 +187,17 @@ static unsigned int assoclist_trymove(assoclist_t *assoclist
 		return ASSOCLIST_HASH_COLLISION;
 	}
 	while(counter != HASH_TYPES){
-		if(counter != get_hash_type(element_info)){
-			size_t move_to = hash(assoclist,get_key(element_info),counter);
-			unsigned int errcode
-			    = assoclist_trymove(assoclist,move_to,nest_counter-1);
-			if(!errcode){
-				*get_element_info_by_offset(assoclist,move_to)
-				    = *get_element_info_by_offset(assoclist,offset);
-				get_hash_type_by_offset(assoclist,move_to) = counter;
-				memcpy(get_value_by_offset(assoclist,move_to)
-					,get_value_by_offset(assoclist,offset)
-				    ,assoclist->element_size);
-				get_used_flag(element_info) = 0;
-				return ASSOCLIST_SUCCESS;
-			}
+		size_t move_to = hash(assoclist,get_key(element_info),counter);
+		unsigned int errcode
+		    = assoclist_trymove(assoclist,move_to,nest_counter-1);
+		if(!errcode){
+			*get_element_info_by_offset(assoclist,move_to)
+			    = *get_element_info_by_offset(assoclist,offset);
+			get_hash_type_by_offset(assoclist,move_to) = counter;
+			memcpy(get_value_by_offset(assoclist,move_to)
+				,get_value_by_offset(assoclist,offset),assoclist->element_size);
+			get_used_flag(element_info) = 0;
+			return ASSOCLIST_SUCCESS;
 		}
 		counter++;
 	}
@@ -248,68 +230,67 @@ assoclist_t *assoclist_initialize(const size_t element_size
 
 void assoclist_release(assoclist_t *assoclist)
 {
-	if(assoclist){
-		size_t counter = 0;
-		while(counter != assoclist->array_size){
-			assoclist_element_info_t *element_info
-			    = get_element_info_by_offset(assoclist,counter);
-			if(get_used_flag(element_info)){
-				free_long_key(element_info);
-				assoclist->release_function
-				    (get_value_by_offset(assoclist,counter));
-			}
-			counter++;
-		}
-		free(assoclist->element_info_array);
-		free(assoclist->value_array);
-		free(assoclist);
+	size_t counter = 0;
+	if(!assoclist){
+		return;
 	}
+	while(counter != assoclist->array_size){
+		assoclist_element_info_t *element_info
+		    = get_element_info_by_offset(assoclist,counter);
+		if(get_used_flag(element_info)){
+			free_long_key(element_info);
+			assoclist->release_function(get_value_by_offset(assoclist,counter));
+		}
+		counter++;
+	}
+	free(assoclist->element_info_array);
+	free(assoclist->value_array);
+	free(assoclist);
 }
 
 unsigned int assoclist_add(assoclist_t *assoclist
     ,const char *key,const void *input)
 {
-	size_t hash_value,counter = 0,key_length;
+	size_t hash_value,hash_id,key_length;
 	unsigned int errcode;
 	assoclist_element_info_t *element_info;
 	if(!key){
 		return ASSOCLIST_INVALID_KEY;
 	}
-	if(assoclist_existent(assoclist,key)){
+	if(!assoclist_private_lookup(assoclist,key,NULL)){
 		return ASSOCLIST_KEY_COLLISION;
 	}
 	if(assoclist->size*4 >= assoclist->array_size*3){
-		errcode = assoclist_resize(assoclist);
-		if(errcode){
-			return errcode;
-		}
+		/* 
+			もしハッシュテーブルの3/4がデータで埋まっていれば、リサイズを試みる。
+			失敗した場合でもエラー処理の必要は無い。
+		*/
+		assoclist_resize(assoclist);
 	}
-	while(counter != HASH_TYPES){
-		errcode = assoclist_trymove
-		    (assoclist,hash_value = hash(assoclist,key,counter),2);
+	hash_id = 0;
+	while(hash_id != HASH_TYPES){
+		hash_value = hash(assoclist,key,hash_id);
+		errcode = assoclist_trymove(assoclist,hash_value,2);
 		if(!errcode){
-			break;
+			goto SUCCEED_IN_TRYMOVE;
 		}
-		counter++;
+		hash_id++;
 	}
-	if(counter == HASH_TYPES){
-		errcode = assoclist_resize(assoclist);
-		if(errcode){
-			return errcode;
-		}
-		counter = 0;
-		while(1){
-			hash_value = hash(assoclist,key,counter);
-			errcode = assoclist_trymove(assoclist,hash_value,4);
-			if(!errcode){
-				break;
-			}
-			counter++;
-			if(counter == HASH_TYPES){
-				return ASSOCLIST_HASH_COLLISION;
-			}
-		}
+	errcode = assoclist_resize(assoclist);
+	if(errcode){
+		return errcode;
 	}
+	hash_id = 0;
+	while(hash_id != HASH_TYPES){
+		hash_value = hash(assoclist,key,hash_id);
+		errcode = assoclist_trymove(assoclist,hash_value,4);
+		if(!errcode){
+			goto SUCCEED_IN_TRYMOVE;
+		}
+		hash_id++;
+	}
+	return ASSOCLIST_HASH_COLLISION;
+	SUCCEED_IN_TRYMOVE:;
 	key_length = strlen(key);
 	element_info = get_element_info_by_offset(assoclist,hash_value);
 	get_mode_flag(element_info) = key_length >= ASSOCLIST_MAX_OF_SHORT_KEY_SIZE;
@@ -318,10 +299,13 @@ unsigned int assoclist_add(assoclist_t *assoclist
 		if(!get_long_key(element_info)){
 			return ASSOCLIST_MEMORY_ALLOCATION_ERROR;
 		}
+		memcpy(get_long_key(element_info),key,key_length+1);
 	}
-	memcpy(get_key(element_info),key,key_length+1);
+	else{
+		memcpy(get_short_key(element_info),key,key_length+1);
+	}
 	get_used_flag(element_info) = 1;
-	get_hash_type(element_info) = counter;
+	get_hash_type(element_info) = hash_id;
 	memcpy(get_value_by_offset(assoclist,hash_value)
 	    ,input,assoclist->element_size);
 	assoclist->size++;
