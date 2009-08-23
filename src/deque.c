@@ -58,6 +58,29 @@
 	Functions
 *******************************************************************************/
 
+static unsigned int deque_resize_to_large(deque_t *deque)
+{
+	void *temp = realloc(deque->array,deque->element_size*deque->array_size*2);
+	if(!temp){
+		return DEQUE_MEMORY_ALLOCATION_ERROR;
+	}
+	deque->array = temp;
+	if(deque->array_size < deque->head+deque->size){
+		memcpy(void_pointer_addition(deque->array
+		    ,deque->element_size*deque->array_size),deque->array
+		    ,deque->element_size*(deque->head+deque->size-deque->array_size));
+	}
+	deque->array_size = deque->array_size*2;
+	return DEQUE_SUCCESS;
+}
+
+/*
+static unsigned int deque_resize_to_small(deque_t *deque)
+{
+	
+}
+*/
+
 deque_t *deque_initialize(const size_t element_size
     ,void (*release_function)(void *))
 {
@@ -69,8 +92,7 @@ deque_t *deque_initialize(const size_t element_size
 	deque->element_size = element_size;
 	deque->array_size = DEQUE_DEFAULT_ARRAY_SIZE;
 	deque->head = 0;
-	deque->release_function = release_function?release_function
-	                                          :dummy_release_function;
+	deque->release_function = release_function;
 	deque->array = malloc(element_size*DEQUE_DEFAULT_ARRAY_SIZE);
 	if(!deque->array){
 		free(deque);
@@ -81,15 +103,18 @@ deque_t *deque_initialize(const size_t element_size
 
 void deque_release(deque_t *deque)
 {
-	if(deque){
+	if(!deque){
+		return;
+	}
+	if(deque->release_function){
 		size_t counter = 0;
 		while(counter != deque->size){
 			deque->release_function(refer_by_offset_from_front(deque,counter));
 			counter++;
 		}
-		free(deque->array);
-		free(deque);
 	}
+	free(deque->array);
+	free(deque);
 }
 
 unsigned int deque_front(deque_t *deque,void *output)
@@ -144,27 +169,13 @@ unsigned int deque_push_front(deque_t *deque,const void *input)
 {
 	if(deque->head+deque->size <= deque->array_size
 	    && deque->array_size*3 <= deque->size*4){
-		void *temp
-		    = realloc(deque->array,deque->element_size*deque->array_size*2);
-		if(!temp && deque->size == deque->array_size){
-			return DEQUE_MEMORY_ALLOCATION_ERROR;
-		}
-		else if(temp){
-			deque->array = temp;
-			deque->array_size = deque->array_size*2;
-		}
+		deque_resize_to_large(deque);
 	}
 	if(deque->array_size == deque->size){
-		void *temp
-		    = realloc(deque->array,deque->element_size*deque->array_size*2);
-		if(!temp){
-			return DEQUE_MEMORY_ALLOCATION_ERROR;
+		int errcode = deque_resize_to_large(deque);
+		if(errcode){
+			return errcode;
 		}
-		deque->array = temp;
-		memcpy(void_pointer_addition(deque->array
-		    ,deque->element_size*deque->array_size)
-		    ,deque->array,deque->element_size*deque->head);
-		deque->array_size = deque->array_size*2;
 	}
 	deque->head = (deque->head-1)%deque->array_size;
 	deque->size++;
@@ -176,27 +187,13 @@ unsigned int deque_push_back(deque_t *deque,const void *input)
 {
 	if(deque->head+deque->size <= deque->array_size
 	    && deque->array_size*3 <= deque->size*4){
-		void *temp
-		    = realloc(deque->array,deque->element_size*deque->array_size*2);
-		if(!temp && deque->size == deque->array_size){
-			return DEQUE_MEMORY_ALLOCATION_ERROR;
-		}
-		else if(temp){
-			deque->array = temp;
-			deque->array_size = deque->array_size*2;
-		}
+		deque_resize_to_large(deque);
 	}
 	if(deque->array_size == deque->size){
-		void *temp
-		    = realloc(deque->array,deque->element_size*deque->array_size*2);
-		if(!temp){
-			return DEQUE_MEMORY_ALLOCATION_ERROR;
+		int errcode = deque_resize_to_large(deque);
+		if(errcode){
+			return errcode;
 		}
-		deque->array = temp;
-		memcpy(void_pointer_addition(deque->array
-		    ,deque->element_size*deque->array_size)
-		    ,deque->array,deque->element_size*deque->head);
-		deque->array_size = deque->array_size*2;
 	}
 	deque->size++;
 	memcpy(refer_back(deque),input,deque->element_size);
@@ -214,13 +211,13 @@ unsigned int deque_pop_front(deque_t *deque,void *output)
 	deque->head = (deque->head+1)%deque->array_size;
 	deque->size--;
 	/*
-	if(queue->size <= queue->array_size/4 && queue->head <= queue->array_size/2
-	    && queue->head+queue->size <= queue->array_size/2
-	    && QUEUE_DEFAULT_ARRAY_SIZE < queue->array_size){
-		void *temp = realloc(queue->array,queue->array_size/2);
+	if(deque->size <= deque->array_size/4 && deque->head <= deque->array_size/2
+	    && deque->head+deque->size <= deque->array_size/2
+	    && DEQUE_DEFAULT_ARRAY_SIZE < deque->array_size){
+		void *temp = realloc(deque->array,deque->array_size/2);
 		if(temp){
-			queue->array = temp;
-			queue->array_size = queue->array_size/2;
+			deque->array = temp;
+			deque->array_size = deque->array_size/2;
 		}
 	}
 	*/
@@ -237,13 +234,13 @@ unsigned int deque_pop_back(deque_t *deque,void *output)
 	}
 	deque->size--;
 	/*
-	if(queue->size <= queue->array_size/4 && queue->head <= queue->array_size/2
-	    && queue->head+queue->size <= queue->array_size/2
-	    && QUEUE_DEFAULT_ARRAY_SIZE < queue->array_size){
-		void *temp = realloc(queue->array,queue->array_size/2);
+	if(deque->size <= deque->array_size/4 && deque->head <= deque->array_size/2
+	    && deque->head+deque->size <= deque->array_size/2
+	    && DEQUE_DEFAULT_ARRAY_SIZE < deque->array_size){
+		void *temp = realloc(deque->array,deque->array_size/2);
 		if(temp){
-			queue->array = temp;
-			queue->array_size = queue->array_size/2;
+			deque->array = temp;
+			deque->array_size = deque->array_size/2;
 		}
 	}
 	*/

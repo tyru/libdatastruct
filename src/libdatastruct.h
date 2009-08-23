@@ -47,7 +47,7 @@
 #define ASSOCLIST_HASH_COLLISION                            0x00000010
 
 #define ASSOCLIST_MAX_OF_SHORT_KEY_SIZE                     16
-#define ASSOCLIST_DEFAULT_ARRAY_SIZE                        (1<<6)
+#define ASSOCLIST_DEFAULT_ARRAY_SIZE                        64
 
 /*double-ended queue*/
 
@@ -56,7 +56,7 @@
 #define DEQUE_EMPTY                                         0x00000002
 #define DEQUE_OFFSET_IS_TOO_LARGE                           0x00000004
 
-#define DEQUE_DEFAULT_ARRAY_SIZE                            (1<<6)
+#define DEQUE_DEFAULT_ARRAY_SIZE                            64
 
 /*stack*/
 
@@ -74,7 +74,59 @@
 #define QUEUE_EMPTY                                         0x00000002
 #define QUEUE_OFFSET_IS_TOO_LARGE                           0x00000004
 
-#define QUEUE_DEFAULT_ARRAY_SIZE                            (1<<6)
+#define QUEUE_DEFAULT_ARRAY_SIZE                            64
+
+/*******************************************************************************
+	Structures
+*******************************************************************************/
+
+/*associative array*/
+
+typedef struct assoclist_element_info
+{
+	size_t hash_id;
+	union
+	{
+		char *long_key;
+		char short_key[ASSOCLIST_MAX_OF_SHORT_KEY_SIZE];
+	} key;
+	unsigned used_flag:1,mode_flag:1;
+} assoclist_element_info_t;
+
+typedef struct assoclist
+{
+	assoclist_element_info_t *element_info_array;
+	void *value_array;
+	size_t size;
+	size_t element_size;
+	size_t array_size;
+	void (*release_function)(void *);
+} assoclist_t;
+
+/*double-ended queue,queue*/
+
+typedef struct deque
+{
+	void *array;
+	size_t size;
+	size_t element_size;
+	size_t array_size;
+	size_t head;
+	void (*release_function)(void *);
+} deque_t;
+
+typedef deque_t queue_t;
+
+/*stack*/
+
+typedef struct stack
+{
+	void *array;
+	size_t size;
+	size_t element_size;
+	size_t array_size;
+	void (*release_function)(void *);
+} stack_t;
 
 /*******************************************************************************
 	Macros
@@ -111,60 +163,6 @@
 
 #define queue_empty(queue) \
     (!(queue)->size)
-
-/*******************************************************************************
-	Structures
-*******************************************************************************/
-
-/*associative array*/
-
-typedef struct assoclist_element_info
-{
-	unsigned used_flag:1;
-	unsigned mode_flag:1;
-	size_t hash_type;
-	union
-	{
-		char *long_key;
-		char short_key[ASSOCLIST_MAX_OF_SHORT_KEY_SIZE];
-	} key;
-} assoclist_element_info_t;
-
-typedef struct assoclist
-{
-	assoclist_element_info_t *element_info_array;
-	void *value_array;
-	size_t size;
-	size_t element_size;
-	size_t array_size;
-	void (*release_function)(void *);
-} assoclist_t;
-
-/*double-ended queue,queue*/
-
-typedef struct deque
-{
-	void *array;
-	size_t size;
-	size_t element_size;
-	size_t array_size;
-	size_t head;
-	void (*release_function)(void *);
-} deque_t;
-
-typedef deque_t queue_t;
-
-/*stack*/
-
-typedef struct stack
-{
-	void *array;
-	size_t size;
-	size_t element_size;
-	size_t array_size;
-	size_t head;
-	void (*release_function)(void *);
-} stack_t;
 
 /*******************************************************************************
 	Functions

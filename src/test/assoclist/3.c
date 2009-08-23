@@ -62,7 +62,7 @@ int main(void)
 		return -1;
 	}
 	time = clock();
-	while(counter != (1<<24)){
+	while(counter != (1<<22)){
 		errcode = assoclist_add(assoclist,integer_to_string(counter),&counter);
 		if(errcode){
 			fputs("Error!\n",stderr);
@@ -73,12 +73,12 @@ int main(void)
 	fprintf(stdout,"insert : %fs\n",(double)(clock()-time)/CLOCKS_PER_SEC);
 	counter = 0;
 	time = clock();
-	while(counter != (1<<24)){
+	while(counter != (1<<22)){
 		errcode = assoclist_lookup(assoclist,integer_to_string(counter),&temp);
 		if(errcode){
 			fputs("Error!\n",stderr);
 		}
-		counter++;
+	counter++;
 	}
 	fprintf(stdout,"find   : %fs\n",(double)(clock()-time)/CLOCKS_PER_SEC);
 	assoclist_release(assoclist);

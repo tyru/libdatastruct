@@ -68,15 +68,14 @@ stack_t *stack_initialize(const size_t element_size
 	stack->size = 0;
 	stack->element_size = element_size;
 	stack->array_size = 0;
-	stack->release_function = release_function?release_function
-	                                          :dummy_release_function;
+	stack->release_function = release_function;
 	return stack;
 }
 
 void stack_release(stack_t *stack)
 {
 	if(stack){
-		if(stack->release_function != dummy_release_function){
+		if(stack->release_function){
 			size_t counter = 0;
 			while(counter != stack->size){
 				stack->release_function(refer_by_offset(stack,counter));
@@ -188,8 +187,8 @@ unsigned int stack_refer_many_elements_from_top
 unsigned int stack_push(stack_t *stack,const void *input)
 {
 	if(stack->size == stack->array_size){
-		void *temp = realloc(stack->array,(stack->array_size
-		    +STACK_MEMORY_ALLOCATION_UNIT_SIZE)*stack->element_size);
+		void *temp = realloc(stack->array,stack->element_size
+		    *(stack->array_size+STACK_MEMORY_ALLOCATION_UNIT_SIZE));
 		if(!temp){
 			return STACK_MEMORY_ALLOCATION_ERROR;
 		}
@@ -210,6 +209,15 @@ unsigned int stack_pop(stack_t *stack,void *output)
 	if(output){
 		memcpy(output,refer_by_offset(stack,stack->size),stack->element_size);
 	}
+	if(STACK_MEMORY_ALLOCATION_UNIT_SIZE*2 <= stack->array_size-stack->size){
+		void *temp = realloc(stack->array,stack->element_size
+		    *(stack->array_size-STACK_MEMORY_ALLOCATION_UNIT_SIZE));
+		if(temp){
+			stack->array = temp;
+			stack->array_size
+			    = stack->array_size-STACK_MEMORY_ALLOCATION_UNIT_SIZE;
+		}
+	}
 	return STACK_SUCCESS;
 }
 
@@ -219,7 +227,7 @@ unsigned int stack_push_many_elements
 	if(stack->size+push_size > stack->array_size){
 		size_t new_size = STACK_MEMORY_ALLOCATION_UNIT_SIZE*((size_t)
 		    ((stack->size+push_size)/STACK_MEMORY_ALLOCATION_UNIT_SIZE)+1);
-		void *temp = realloc(stack->array,new_size*stack->element_size);
+		void *temp = realloc(stack->array,stack->element_size*new_size);
 		if(!temp){
 			return STACK_MEMORY_ALLOCATION_ERROR;
 		}
