@@ -29,7 +29,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../libdatastruct.h"
+#include "../../assoclist.h"
 
 void free_object(void *pointer)
 {

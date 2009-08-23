@@ -1,7 +1,7 @@
 
 /*
  * Functions for the associative array data structure
- * Copyright (c) 2009, Kazuhiko Sakaguchi All rights reserved.
+ * Copyright (c) 2008-2009, Kazuhiko Sakaguchi All rights reserved.
  * This file is part of the libdatastruct.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -31,11 +31,12 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "libdatastruct.h"
 
 #if GLIBC_ALLOCA
 #include <alloca.h>
 #endif
+
+#include "assoclist.h"
 
 /*******************************************************************************
 	Constants

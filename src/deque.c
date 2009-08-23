@@ -1,7 +1,7 @@
 
 /*
  * Functions for the double-ended queue
- * Copyright (c) 2009, Kazuhiko Sakaguchi All rights reserved.
+ * Copyright (c) 2008-2009, Kazuhiko Sakaguchi All rights reserved.
  * This file is part of the libdatastruct.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,8 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "libdatastruct.h"
+
+#include "deque.h"
 
 /*******************************************************************************
 	Macros
@@ -73,13 +74,6 @@ static unsigned int deque_resize_to_large(deque_t *deque)
 	deque->array_size = deque->array_size*2;
 	return DEQUE_SUCCESS;
 }
-
-/*
-static unsigned int deque_resize_to_small(deque_t *deque)
-{
-	
-}
-*/
 
 deque_t *deque_initialize(const size_t element_size
     ,void (*release_function)(void *))
@@ -210,17 +204,6 @@ unsigned int deque_pop_front(deque_t *deque,void *output)
 	}
 	deque->head = (deque->head+1)%deque->array_size;
 	deque->size--;
-	/*
-	if(deque->size <= deque->array_size/4 && deque->head <= deque->array_size/2
-	    && deque->head+deque->size <= deque->array_size/2
-	    && DEQUE_DEFAULT_ARRAY_SIZE < deque->array_size){
-		void *temp = realloc(deque->array,deque->array_size/2);
-		if(temp){
-			deque->array = temp;
-			deque->array_size = deque->array_size/2;
-		}
-	}
-	*/
 	return DEQUE_SUCCESS;
 }
 
@@ -233,17 +216,6 @@ unsigned int deque_pop_back(deque_t *deque,void *output)
 		memcpy(output,refer_back(deque),deque->element_size);
 	}
 	deque->size--;
-	/*
-	if(deque->size <= deque->array_size/4 && deque->head <= deque->array_size/2
-	    && deque->head+deque->size <= deque->array_size/2
-	    && DEQUE_DEFAULT_ARRAY_SIZE < deque->array_size){
-		void *temp = realloc(deque->array,deque->array_size/2);
-		if(temp){
-			deque->array = temp;
-			deque->array_size = deque->array_size/2;
-		}
-	}
-	*/
 	return DEQUE_SUCCESS;
 }
 

@@ -28,7 +28,7 @@
  */
 
 #include <stdio.h>
-#include "../../libdatastruct.h"
+#include "../../deque.h"
 
 int main(void)
 {

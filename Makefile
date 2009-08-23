@@ -7,109 +7,107 @@ bin : bin/assoclist/1 bin/assoclist/2 bin/deque/1 bin/deque/2 \
     bin/stack/1 bin/stack/2 bin/stack/3 bin/stack/4 \
 	bin/queue/1 bin/queue/2
 
-obj :
+obj/assoclist.o : src/assoclist.c src/assoclist.h
 	mkdir -p obj
+	$(CC) -o $@ -c src/assoclist.c
 
-obj/libdatastruct.o : src/libdatastruct.c src/libdatastruct.h obj
-	$(CC) -o obj/libdatastruct.o -c src/libdatastruct.c
+obj/deque.o : src/deque.c src/assoclist.h
+	mkdir -p obj
+	$(CC) -o $@ -c src/deque.c
 
-obj/assoclist.o : src/assoclist.c src/libdatastruct.h obj
-	$(CC) -o obj/assoclist.o -c src/assoclist.c
+obj/stack.o : src/stack.c src/stack.h
+	mkdir -p obj
+	$(CC) -o $@ -c src/stack.c
 
-obj/deque.o : src/deque.c src/libdatastruct.h obj
-	$(CC) -o obj/deque.o -c src/deque.c
+obj/queue.o : src/queue.c src/queue.h
+	mkdir -p obj
+	$(CC) -o $@ -c src/queue.c
 
-obj/stack.o : src/stack.c src/libdatastruct.h obj
-	$(CC) -o obj/stack.o -c src/stack.c
-
-obj/queue.o : src/queue.c src/libdatastruct.h obj
-	$(CC) -o obj/queue.o -c src/queue.c
-
-obj/test/assoclist/1.o : src/test/assoclist/1.c src/libdatastruct.h
+obj/test/assoclist/1.o : src/test/assoclist/1.c src/assoclist.h
 	mkdir -p obj/test/assoclist/
 	$(CC) -o $@ -c src/test/assoclist/1.c
 
-obj/test/assoclist/2.o : src/test/assoclist/2.c src/libdatastruct.h
+obj/test/assoclist/2.o : src/test/assoclist/2.c src/assoclist.h
 	mkdir -p obj/test/assoclist/
 	$(CC) -o $@ -c src/test/assoclist/2.c
 
-obj/test/assoclist/3.o : src/test/assoclist/3.c src/libdatastruct.h
+obj/test/assoclist/3.o : src/test/assoclist/3.c src/assoclist.h
 	mkdir -p obj/test/assoclist/
 	$(CC) -o $@ -c src/test/assoclist/3.c
 
-obj/test/deque/1.o : src/test/deque/1.c src/libdatastruct.h
+obj/test/deque/1.o : src/test/deque/1.c src/deque.h
 	mkdir -p obj/test/deque/
 	$(CC) -o $@ -c src/test/deque/1.c
 
-obj/test/deque/2.o : src/test/deque/2.c src/libdatastruct.h
+obj/test/deque/2.o : src/test/deque/2.c src/deque.h
 	mkdir -p obj/test/deque/
 	$(CC) -o $@ -c src/test/deque/2.c
 
-obj/test/stack/1.o : src/test/stack/1.c src/libdatastruct.h
+obj/test/stack/1.o : src/test/stack/1.c src/stack.h
 	mkdir -p obj/test/stack/
 	$(CC) -o $@ -c src/test/stack/1.c
 
-obj/test/stack/2.o : src/test/stack/2.c src/libdatastruct.h
+obj/test/stack/2.o : src/test/stack/2.c src/stack.h
 	mkdir -p obj/test/stack/
 	$(CC) -o $@ -c src/test/stack/2.c
 
-obj/test/stack/3.o : src/test/stack/3.c src/libdatastruct.h
+obj/test/stack/3.o : src/test/stack/3.c src/stack.h
 	mkdir -p obj/test/stack/
 	$(CC) -o $@ -c src/test/stack/3.c
 
-obj/test/stack/4.o : src/test/stack/4.c src/libdatastruct.h
+obj/test/stack/4.o : src/test/stack/4.c src/stack.h
 	mkdir -p obj/test/stack/
 	$(CC) -o $@ -c src/test/stack/4.c
 
-obj/test/queue/1.o : src/test/queue/1.c src/libdatastruct.h
+obj/test/queue/1.o : src/test/queue/1.c src/queue.h
 	mkdir -p obj/test/queue/
 	$(CC) -o $@ -c src/test/queue/1.c
 
-obj/test/queue/2.o : src/test/queue/2.c src/libdatastruct.h
+obj/test/queue/2.o : src/test/queue/2.c src/queue.h
 	mkdir -p obj/test/queue/
 	$(CC) -o $@ -c src/test/queue/2.c
 
-bin/assoclist/1 : obj/libdatastruct.o obj/assoclist.o obj/test/assoclist/1.o
+bin/assoclist/1 : obj/assoclist.o obj/test/assoclist/1.o
 	mkdir -p bin/assoclist/
 	$(CC) -o $@ $^
 
-bin/assoclist/2 : obj/libdatastruct.o obj/assoclist.o obj/test/assoclist/2.o
+bin/assoclist/2 : obj/assoclist.o obj/test/assoclist/2.o
 	mkdir -p bin/assoclist/
 	$(CC) -o $@ $^
 
-bin/assoclist/3 : obj/libdatastruct.o obj/assoclist.o obj/test/assoclist/3.o
+bin/assoclist/3 : obj/assoclist.o obj/test/assoclist/3.o
 	mkdir -p bin/assoclist/
 	$(CC) -o $@ $^
 
-bin/deque/1 : obj/libdatastruct.o obj/deque.o obj/test/deque/1.o
+bin/deque/1 : obj/deque.o obj/test/deque/1.o
 	mkdir -p bin/deque/
 	$(CC) -o $@ $^
 
-bin/deque/2 : obj/libdatastruct.o obj/deque.o obj/test/deque/2.o
+bin/deque/2 : obj/deque.o obj/test/deque/2.o
 	mkdir -p bin/deque/
 	$(CC) -o $@ $^
 
-bin/stack/1 : obj/libdatastruct.o obj/stack.o obj/test/stack/1.o
+bin/stack/1 : obj/stack.o obj/test/stack/1.o
 	mkdir -p bin/stack/
 	$(CC) -o $@ $^
 
-bin/stack/2 : obj/libdatastruct.o obj/stack.o obj/test/stack/2.o
+bin/stack/2 : obj/stack.o obj/test/stack/2.o
 	mkdir -p bin/stack/
 	$(CC) -o $@ $^
 
-bin/stack/3 : obj/libdatastruct.o obj/stack.o obj/test/stack/3.o
+bin/stack/3 : obj/stack.o obj/test/stack/3.o
 	mkdir -p bin/stack/
 	$(CC) -o $@ $^
 
-bin/stack/4 : obj/libdatastruct.o obj/stack.o obj/test/stack/4.o
+bin/stack/4 : obj/stack.o obj/test/stack/4.o
 	mkdir -p bin/stack/
 	$(CC) -o $@ $^
 
-bin/queue/1 : obj/libdatastruct.o obj/queue.o obj/test/queue/1.o
+bin/queue/1 : obj/queue.o obj/test/queue/1.o
 	mkdir -p bin/queue/
 	$(CC) -o $@ $^
 
-bin/queue/2 : obj/libdatastruct.o obj/queue.o obj/test/queue/2.o
+bin/queue/2 : obj/queue.o obj/test/queue/2.o
 	mkdir -p bin/queue/
 	$(CC) -o $@ $^
 

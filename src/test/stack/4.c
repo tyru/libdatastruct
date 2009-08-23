@@ -28,7 +28,7 @@
  */
 
 #include <stdio.h>
-#include "../../libdatastruct.h"
+#include "../../stack.h"
 
 int my_abs(int n){
 	return (0 < n)?n

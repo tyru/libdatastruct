@@ -1,7 +1,7 @@
 
 /*
  * Functions for the queue data structure
- * Copyright (c) 2009, Kazuhiko Sakaguchi All rights reserved.
+ * Copyright (c) 2008-2009, Kazuhiko Sakaguchi All rights reserved.
  * This file is part of the libdatastruct.
  * 
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,8 @@
 
 #include <stdlib.h>
 #include <string.h>
-#include "libdatastruct.h"
+
+#include "queue.h"
 
 /*******************************************************************************
 	Macros
@@ -69,8 +70,7 @@ queue_t *queue_initialize(const size_t element_size
 	queue->element_size = element_size;
 	queue->array_size = QUEUE_DEFAULT_ARRAY_SIZE;
 	queue->head = 0;
-	queue->release_function = release_function?release_function
-	                                          :dummy_release_function;
+	queue->release_function = release_function;
 	queue->array = malloc(element_size*QUEUE_DEFAULT_ARRAY_SIZE);
 	if(!queue->array){
 		free(queue);
@@ -82,10 +82,12 @@ queue_t *queue_initialize(const size_t element_size
 void queue_release(queue_t *queue)
 {
 	if(queue){
-		size_t counter = 0;
-		while(counter != queue->size){
-			queue->release_function(refer_by_offset_from_front(queue,counter));
-			counter++;
+		if(queue->release_function){
+			size_t counter = 0;
+			while(counter != queue->size){
+				queue->release_function(refer_by_offset_from_front(queue,counter));
+				counter++;
+			}
 		}
 		free(queue->array);
 		free(queue);
@@ -182,16 +184,5 @@ unsigned int queue_dequeue(queue_t *queue,void *output)
 	}
 	queue->head = (queue->head+1)%queue->array_size;
 	queue->size--;
-	/*
-	if(queue->size <= queue->array_size/4 && queue->head <= queue->array_size/2
-	    && queue->head+queue->size <= queue->array_size/2
-	    && QUEUE_DEFAULT_ARRAY_SIZE < queue->array_size){
-		void *temp = realloc(queue->array,queue->array_size/2);
-		if(temp){
-			queue->array = temp;
-			queue->array_size = queue->array_size/2;
-		}
-	}
-	*/
 	return QUEUE_SUCCESS;
 }

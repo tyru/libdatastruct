@@ -28,7 +28,7 @@
  */
 
 #include <stdio.h>
-#include "../../libdatastruct.h"
+#include "../../stack.h"
 
 int main(void)
 {
