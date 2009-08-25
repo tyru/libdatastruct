@@ -47,6 +47,8 @@
 #define ASSOCLIST_MAX_OF_SHORT_KEY_SIZE                     16
 #define ASSOCLIST_DEFAULT_ARRAY_SIZE                        64
 
+#define ASSOCLIST_HASH_TYPES                                4
+
 /*******************************************************************************
 	Structures
 *******************************************************************************/
@@ -54,12 +56,12 @@
 typedef struct assoclist_element_info
 {
 	size_t hash_id;
+	unsigned used_flag:1,mode_flag:1;
 	union
 	{
 		char *long_key;
 		char short_key[ASSOCLIST_MAX_OF_SHORT_KEY_SIZE];
 	} key;
-	unsigned used_flag:1,mode_flag:1;
 } assoclist_element_info_t;
 
 typedef struct assoclist

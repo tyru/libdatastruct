@@ -39,23 +39,6 @@
 #include "assoclist.h"
 
 /*******************************************************************************
-	Constants
-*******************************************************************************/
-
-#define HASH_TYPES                                          4
-
-/*******************************************************************************
-	Structure
-*******************************************************************************/
-
-typedef struct
-{
-	size_t offset;
-	assoclist_element_info_t *element_info;
-	unsigned int hash_id;
-} trymove_stack_t;
-
-/*******************************************************************************
 	Macros
 *******************************************************************************/
 
@@ -119,22 +102,34 @@ typedef struct
     ,(assoclist)->element_size*(offset)))
 
 #define compare_key_and_element_info(key,element_info) \
-    (get_used_flag(element_info)  && !strcmp(key,get_key(element_info)))
+    (get_used_flag(element_info)  && compare_string(key,get_key(element_info)))
 
 #define compare_key_and_offset(assoclist,key,offset) \
     (get_used_flag_by_offset(assoclist,offset) \
-    && !strcmp(key,get_key_by_offset(assoclist,offset)))
+    && compare_string(key,get_key_by_offset(assoclist,offset)))
 
 /*******************************************************************************
 	Functions
 *******************************************************************************/
 
+static int compare_string(const char *str1,const char *str2)
+{
+	while(*str1 == *str2){
+		if(!*str1){
+			return 1;
+		}
+		str1++;
+		str2++;
+	}
+	return 0;
+}
+
 static size_t hash_function(const char *string,size_t num)
 {
-	size_t counter = 0,result = num;
-	while(string[counter]){
-		result = (result*0x00000129)^string[counter];
-		counter++;
+	size_t result = num;
+	while(*string){
+		result = (result*0x00000129)^*string;
+		string++;
 	}
 	return result;
 }
@@ -143,7 +138,7 @@ static unsigned int assoclist_private_lookup(assoclist_t *assoclist
     ,const char *key,size_t *offset)
 {
 	size_t hash_value,hash_id = 0;
-	while(hash_id != HASH_TYPES){
+	while(hash_id != ASSOCLIST_HASH_TYPES){
 		hash_value = hash(assoclist,key,hash_id);
 		if(hash_id == get_hash_id_by_offset(assoclist,hash_value)
 		    && compare_key_and_offset(assoclist,key,hash_value)){
@@ -195,6 +190,12 @@ static unsigned int assoclist_resize(assoclist_t *assoclist)
 static unsigned int assoclist_trymove(assoclist_t *assoclist
     ,size_t offset,unsigned int recur_limit)
 {
+	typedef struct
+	{
+		size_t offset;
+		assoclist_element_info_t *element_info;
+		unsigned int hash_id;
+	} trymove_stack_t;
 	trymove_stack_t *stack_top,*stack_bottom;
 #if GLIBC_ALLOCA
 	stack_top = stack_bottom = alloca(sizeof(trymove_stack_t)*(recur_limit+1));
@@ -208,7 +209,7 @@ static unsigned int assoclist_trymove(assoclist_t *assoclist
 	stack_top->element_info = get_element_info_by_offset(assoclist,offset);
 	stack_top->hash_id = 0;
 	while(1){
-		if(stack_top->hash_id == HASH_TYPES){
+		if(stack_top->hash_id == ASSOCLIST_HASH_TYPES){
 			if(stack_top == stack_bottom){
 #if !GLIBC_ALLOCA
 				free(stack_bottom);
@@ -218,22 +219,7 @@ static unsigned int assoclist_trymove(assoclist_t *assoclist
 			stack_top--;
 			stack_top->hash_id++;
 		}
-		else if(!get_used_flag(stack_top->element_info)){
-			while(stack_top != stack_bottom){
-				*(stack_top->element_info) = *((stack_top-1)->element_info);
-				stack_top->element_info->hash_id = (stack_top-1)->hash_id;
-				memcpy(get_value_by_offset(assoclist,stack_top->offset)
-				    ,get_value_by_offset(assoclist,(stack_top-1)->offset)
-				    ,assoclist->element_size);
-				stack_top--;
-			}
-			get_used_flag(stack_top->element_info) = 0;
-#if !GLIBC_ALLOCA
-			free(stack_bottom);
-#endif
-			return ASSOCLIST_SUCCESS;
-		}
-		if(stack_top-stack_bottom == recur_limit-1){
+		else if(stack_top-stack_bottom == recur_limit-1){
 			stack_top--;
 			stack_top->hash_id++;
 		}
@@ -244,6 +230,21 @@ static unsigned int assoclist_trymove(assoclist_t *assoclist
 			stack_top->element_info
 			    = get_element_info_by_offset(assoclist,stack_top->offset);
 			stack_top->hash_id = 0;
+			if(!get_used_flag(stack_top->element_info)){
+				while(stack_top != stack_bottom){
+					*(stack_top->element_info) = *((stack_top-1)->element_info);
+					stack_top->element_info->hash_id = (stack_top-1)->hash_id;
+					memcpy(get_value_by_offset(assoclist,stack_top->offset)
+					    ,get_value_by_offset(assoclist,(stack_top-1)->offset)
+					    ,assoclist->element_size);
+					stack_top--;
+				}
+				get_used_flag(stack_top->element_info) = 0;
+#if !GLIBC_ALLOCA
+				free(stack_bottom);
+#endif
+				return ASSOCLIST_SUCCESS;
+			}
 		}
 	}
 }
@@ -315,12 +316,12 @@ unsigned int assoclist_add(assoclist_t *assoclist
 	}
 	while(1){
 		hash_id = 0;
-		while(hash_id != HASH_TYPES){
+		while(hash_id != ASSOCLIST_HASH_TYPES){
 			hash_value = hash(assoclist,key,hash_id);
-			hash_id++;
 			if(!assoclist_trymove(assoclist,hash_value,counter*2)){
 				goto SUCCEED_IN_TRYMOVE;
 			}
+			hash_id++;
 		}
 		if(counter == 1 && (errcode = assoclist_resize(assoclist))){
 			return errcode;
@@ -346,7 +347,7 @@ unsigned int assoclist_add(assoclist_t *assoclist
 		memcpy(get_short_key(element_info),key,key_length+1);
 	}
 	get_used_flag(element_info) = 1;
-	get_hash_id(element_info) = hash_id-1;
+	get_hash_id(element_info) = hash_id;
 	memcpy(get_value_by_offset(assoclist,hash_value)
 	    ,input,assoclist->element_size);
 	assoclist->size++;
