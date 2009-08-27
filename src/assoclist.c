@@ -197,6 +197,9 @@ static unsigned int assoclist_trymove(assoclist_t *assoclist
 		unsigned int hash_id;
 	} trymove_stack_t;
 	trymove_stack_t *stack_top,*stack_bottom;
+	if(!get_used_flag_by_offset(assoclist,offset)){
+		return ASSOCLIST_SUCCESS;
+	}
 #if GLIBC_ALLOCA
 	stack_top = stack_bottom = alloca(sizeof(trymove_stack_t)*(recur_limit+1));
 #else
@@ -209,21 +212,7 @@ static unsigned int assoclist_trymove(assoclist_t *assoclist
 	stack_top->element_info = get_element_info_by_offset(assoclist,offset);
 	stack_top->hash_id = 0;
 	while(1){
-		if(stack_top->hash_id == ASSOCLIST_HASH_TYPES){
-			if(stack_top == stack_bottom){
-#if !GLIBC_ALLOCA
-				free(stack_bottom);
-#endif
-				return ASSOCLIST_HASH_COLLISION;
-			}
-			stack_top--;
-			stack_top->hash_id++;
-		}
-		else if(stack_top-stack_bottom == recur_limit-1){
-			stack_top--;
-			stack_top->hash_id++;
-		}
-		else{
+		while(stack_top-stack_bottom != recur_limit-1){
 			stack_top++;
 			stack_top->offset = hash(assoclist
 			    ,get_key((stack_top-1)->element_info),(stack_top-1)->hash_id);
@@ -245,6 +234,18 @@ static unsigned int assoclist_trymove(assoclist_t *assoclist
 #endif
 				return ASSOCLIST_SUCCESS;
 			}
+		}
+		stack_top--;
+		stack_top->hash_id++;
+		while(stack_top->hash_id == ASSOCLIST_HASH_TYPES){
+			if(stack_top == stack_bottom){
+#if !GLIBC_ALLOCA
+				free(stack_bottom);
+#endif
+				return ASSOCLIST_HASH_COLLISION;
+			}
+			stack_top--;
+			stack_top->hash_id++;
 		}
 	}
 }
