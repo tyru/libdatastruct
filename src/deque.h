@@ -48,7 +48,9 @@
 	Structures
 *******************************************************************************/
 
-typedef struct deque
+typedef struct deque deque_t;
+
+struct deque
 {
 	void *array;
 	size_t size;
@@ -56,7 +58,7 @@ typedef struct deque
 	size_t array_size;
 	size_t head;
 	void (*release_function)(void *);
-} deque_t;
+};
 
 /*******************************************************************************
 	Macros

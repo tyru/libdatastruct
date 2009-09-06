@@ -29,7 +29,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../assoclist.h"
+#include "../../cassoclist.h"
 
 void free_object(void *pointer)
 {
@@ -56,17 +56,17 @@ char *integer_to_string(unsigned int integer)
 
 int main(void)
 {
-	assoclist_t *assoclist;
+	cassoclist_t *cassoclist;
 	unsigned int errcode;
 	size_t counter = 0;
 	void *pointer;
-	assoclist = assoclist_initialize(sizeof(void *),free_object);
-	if(!assoclist){
+	cassoclist = cassoclist_initialize(sizeof(void *),free_object);
+	if(!cassoclist){
 		return -1;
 	}
 	while(counter != 1024){
 		pointer = malloc(1);
-		errcode = assoclist_add(assoclist,integer_to_string(counter),&pointer);
+		errcode = cassoclist_add(cassoclist,integer_to_string(counter),&pointer);
 		if(errcode){
 			fputs("Error!\n",stderr);
 			return -1;
@@ -76,7 +76,7 @@ int main(void)
 	}
 	counter = 0;
 	while(counter != 1024){
-		errcode = assoclist_lookup(assoclist
+		errcode = cassoclist_lookup(cassoclist
 		    ,integer_to_string(counter),&pointer);
 		if(errcode){
 			fputs("Error!\n",stderr);
@@ -84,6 +84,6 @@ int main(void)
 		fprintf(stdout,"find : %s,%d\n",integer_to_string(counter),pointer);
 		counter++;
 	}
-	assoclist_release(assoclist);
+	cassoclist_release(cassoclist);
 	return 0;
 }

@@ -3,15 +3,15 @@ CC = gcc
 
 all : run
 
-bin : bin/assoclist/1 bin/assoclist/2 bin/deque/1 bin/deque/2 \
+bin : bin/cassoclist/1 bin/cassoclist/2 bin/deque/1 bin/deque/2 \
     bin/stack/1 bin/stack/2 bin/stack/3 bin/stack/4 \
 	bin/queue/1 bin/queue/2
 
-obj/assoclist.o : src/assoclist.c src/assoclist.h
+obj/cassoclist.o : src/cassoclist.c src/cassoclist.h
 	mkdir -p obj
-	$(CC) -o $@ -c src/assoclist.c
+	$(CC) -o $@ -c src/cassoclist.c
 
-obj/deque.o : src/deque.c src/assoclist.h
+obj/deque.o : src/deque.c src/cassoclist.h
 	mkdir -p obj
 	$(CC) -o $@ -c src/deque.c
 
@@ -23,17 +23,13 @@ obj/queue.o : src/queue.c src/queue.h
 	mkdir -p obj
 	$(CC) -o $@ -c src/queue.c
 
-obj/test/assoclist/1.o : src/test/assoclist/1.c src/assoclist.h
-	mkdir -p obj/test/assoclist/
-	$(CC) -o $@ -c src/test/assoclist/1.c
+obj/test/cassoclist/1.o : src/test/cassoclist/1.c src/cassoclist.h
+	mkdir -p obj/test/cassoclist/
+	$(CC) -o $@ -c src/test/cassoclist/1.c
 
-obj/test/assoclist/2.o : src/test/assoclist/2.c src/assoclist.h
-	mkdir -p obj/test/assoclist/
-	$(CC) -o $@ -c src/test/assoclist/2.c
-
-obj/test/assoclist/3.o : src/test/assoclist/3.c src/assoclist.h
-	mkdir -p obj/test/assoclist/
-	$(CC) -o $@ -c src/test/assoclist/3.c
+obj/test/cassoclist/2.o : src/test/cassoclist/2.c src/cassoclist.h
+	mkdir -p obj/test/cassoclist/
+	$(CC) -o $@ -c src/test/cassoclist/2.c
 
 obj/test/deque/1.o : src/test/deque/1.c src/deque.h
 	mkdir -p obj/test/deque/
@@ -67,16 +63,12 @@ obj/test/queue/2.o : src/test/queue/2.c src/queue.h
 	mkdir -p obj/test/queue/
 	$(CC) -o $@ -c src/test/queue/2.c
 
-bin/assoclist/1 : obj/assoclist.o obj/test/assoclist/1.o
-	mkdir -p bin/assoclist/
+bin/cassoclist/1 : obj/cassoclist.o obj/test/cassoclist/1.o
+	mkdir -p bin/cassoclist/
 	$(CC) -o $@ $^
 
-bin/assoclist/2 : obj/assoclist.o obj/test/assoclist/2.o
-	mkdir -p bin/assoclist/
-	$(CC) -o $@ $^
-
-bin/assoclist/3 : obj/assoclist.o obj/test/assoclist/3.o
-	mkdir -p bin/assoclist/
+bin/cassoclist/2 : obj/cassoclist.o obj/test/cassoclist/2.o
+	mkdir -p bin/cassoclist/
 	$(CC) -o $@ $^
 
 bin/deque/1 : obj/deque.o obj/test/deque/1.o
@@ -113,9 +105,9 @@ bin/queue/2 : obj/queue.o obj/test/queue/2.o
 
 run : bin
 	@echo
-	@echo bin/assoclist/1
+	@echo bin/cassoclist/1
 	@echo
-	@bin/assoclist/1
+	@bin/cassoclist/1
 	
 	@echo
 	@echo bin/deque/1

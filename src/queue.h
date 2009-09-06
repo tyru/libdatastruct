@@ -48,7 +48,9 @@
 	Structures
 *******************************************************************************/
 
-typedef struct queue
+typedef struct queue queue_t;
+
+struct queue
 {
 	void *array;
 	size_t size;
@@ -56,7 +58,7 @@ typedef struct queue
 	size_t array_size;
 	size_t head;
 	void (*release_function)(void *);
-} queue_t;
+};
 
 /*******************************************************************************
 	Macros

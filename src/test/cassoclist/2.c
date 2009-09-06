@@ -29,7 +29,7 @@
 
 #include <stdio.h>
 #include <time.h>
-#include "../../assoclist.h"
+#include "../../cassoclist.h"
 
 char *integer_to_string(unsigned int integer)
 {
@@ -51,19 +51,19 @@ char *integer_to_string(unsigned int integer)
 
 int main(void)
 {
-	assoclist_t *assoclist;
+	cassoclist_t *cassoclist;
 	unsigned int errcode;
 	size_t counter = 0;
 	size_t temp;
 	clock_t time;
-	assoclist = assoclist_initialize(sizeof(size_t),NULL);
-	if(!assoclist){
+	cassoclist = cassoclist_initialize(sizeof(size_t),NULL);
+	if(!cassoclist){
 		fputs("Error!\n",stderr);
 		return -1;
 	}
 	time = clock();
 	while(counter != (1<<22)){
-		errcode = assoclist_add(assoclist,integer_to_string(counter),&counter);
+		errcode = cassoclist_add(cassoclist,integer_to_string(counter),&counter);
 		if(errcode){
 			fputs("Error!\n",stderr);
 			return -1;
@@ -74,13 +74,13 @@ int main(void)
 	counter = 0;
 	time = clock();
 	while(counter != (1<<22)){
-		errcode = assoclist_lookup(assoclist,integer_to_string(counter),&temp);
+		errcode = cassoclist_lookup(cassoclist,integer_to_string(counter),&temp);
 		if(errcode){
 			fputs("Error!\n",stderr);
 		}
 	counter++;
 	}
 	fprintf(stdout,"find   : %fs\n",(double)(clock()-time)/CLOCKS_PER_SEC);
-	assoclist_release(assoclist);
+	cassoclist_release(cassoclist);
 	return 0;
 }

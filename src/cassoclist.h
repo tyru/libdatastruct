@@ -27,9 +27,9 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef HEADER_ASSOCLIST_H
+#ifndef HEADER_CASSOCLIST_H
 
-#define HEADER_ASSOCLIST_H
+#define HEADER_CASSOCLIST_H
 
 #include <stddef.h>
 
@@ -37,68 +37,72 @@
 	Constants
 *******************************************************************************/
 
-#define ASSOCLIST_SUCCESS                                   0x00000000
-#define ASSOCLIST_MEMORY_ALLOCATION_ERROR                   0x00000001
-#define ASSOCLIST_INVALID_KEY                               0x00000002
-#define ASSOCLIST_KEY_COLLISION                             0x00000004
-#define ASSOCLIST_NOT_EXISTENT_KEY                          0x00000008
-#define ASSOCLIST_HASH_COLLISION                            0x00000010
+#define CASSOCLIST_SUCCESS                                   0x00000000
+#define CASSOCLIST_MEMORY_ALLOCATION_ERROR                   0x00000001
+#define CASSOCLIST_INVALID_KEY                               0x00000002
+#define CASSOCLIST_KEY_COLLISION                             0x00000004
+#define CASSOCLIST_NOT_EXISTENT_KEY                          0x00000008
+#define CASSOCLIST_HASH_COLLISION                            0x00000010
 
-#define ASSOCLIST_MAX_OF_SHORT_KEY_SIZE                     16
-#define ASSOCLIST_DEFAULT_ARRAY_SIZE                        64
+#define CASSOCLIST_MAX_OF_SHORT_KEY_SIZE                     16
+#define CASSOCLIST_DEFAULT_ARRAY_SIZE                        64
 
-#define ASSOCLIST_HASH_TYPES                                4
+#define CASSOCLIST_HASH_TYPES                                4
 
 /*******************************************************************************
 	Structures
 *******************************************************************************/
 
-typedef struct assoclist_element_info
+typedef struct cassoclist_element_info cassoclist_element_info_t;
+
+typedef struct cassoclist cassoclist_t;
+
+struct cassoclist_element_info
 {
 	size_t hash_id;
 	unsigned used_flag:1,mode_flag:1;
 	union
 	{
 		char *long_key;
-		char short_key[ASSOCLIST_MAX_OF_SHORT_KEY_SIZE];
+		char short_key[CASSOCLIST_MAX_OF_SHORT_KEY_SIZE];
 	} key;
-} assoclist_element_info_t;
+};
 
-typedef struct assoclist
+struct cassoclist
 {
-	assoclist_element_info_t *element_info_array;
+	cassoclist_element_info_t *element_info_array;
 	void *value_array;
 	size_t size;
 	size_t element_size;
 	size_t array_size;
 	void (*release_function)(void *);
-} assoclist_t;
+};
 
 /*******************************************************************************
 	Macros
 *******************************************************************************/
 
-#define assoclist_size(assoclist) \
+#define cassoclist_size(cassoclist) \
     ((assoclist)->size)
 
-#define assoclist_empty(assoclist) \
-    (!(assoclist)->size)
+#define cassoclist_empty(cassoclist) \
+    (!(cassoclist)->size)
 
 /*******************************************************************************
 	Functions
 *******************************************************************************/
 
-extern assoclist_t *assoclist_initialize
+extern cassoclist_t *cassoclist_initialize
     (const size_t,void (*)(void *));
-extern void assoclist_release
-    (assoclist_t *);
-extern unsigned int assoclist_add
-    (assoclist_t *,const char *,const void *);
-extern unsigned int assoclist_reassign
-    (assoclist_t *,const char *,const void *);
-extern unsigned int assoclist_lookup
-    (assoclist_t *,const char *,void *);
-extern unsigned int assoclist_remove
-    (assoclist_t *,const char *,void *);
+extern void cassoclist_release
+    (cassoclist_t *);
+extern unsigned int cassoclist_add
+    (cassoclist_t *,const char *,const void *);
+extern unsigned int cassoclist_reassign
+    (cassoclist_t *,const char *,const void *);
+extern unsigned int cassoclist_lookup
+    (cassoclist_t *,const char *,void *);
+extern unsigned int cassoclist_remove
+    (cassoclist_t *,const char *,void *);
 
 #endif

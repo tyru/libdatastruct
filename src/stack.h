@@ -48,6 +48,8 @@
 	Structures
 *******************************************************************************/
 
+typedef struct stack stack_t;
+
 typedef struct stack
 {
 	void *array;
@@ -55,7 +57,7 @@ typedef struct stack
 	size_t element_size;
 	size_t array_size;
 	void (*release_function)(void *);
-} stack_t;
+};
 
 /*******************************************************************************
 	Macros
