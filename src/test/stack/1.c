@@ -36,13 +36,19 @@ void free_object(void *pointer)
 	free(*(void **)pointer);
 }
 
+void *copy_object(void *dest, const void *src, size_t n)
+{
+	*(void **)dest = *(void **)src;
+	return dest;
+}
+
 int main(void)
 {
 	stack_t *stack;
 	unsigned int errcode;
 	size_t counter = 0;
 	void *pointer;
-	stack = stack_initialize(sizeof(void *),free_object,NULL);
+	stack = stack_initialize(sizeof(void *),free_object,copy_object);
 	if(!stack){
 		fputs("Error!\n",stderr);
 		return -1;
@@ -64,7 +70,7 @@ int main(void)
 				return -1;
 			}
 			fprintf(stdout,"pop : %d\n",pointer);
-			free_object(&pointer);
+			// free_object(&pointer);
 		}
 		counter++;
 	}
@@ -76,7 +82,7 @@ int main(void)
 			return -1;
 		}
 		fprintf(stdout,"pop : %d\n",(unsigned int)pointer);
-		free(pointer);
+		// free(pointer);
 	}
 	stack_release(stack);
 	return 0;
