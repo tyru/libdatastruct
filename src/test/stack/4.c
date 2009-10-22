@@ -40,7 +40,7 @@ int main(void)
 	stack_t *stack;
 	unsigned int errcode,integer,array[32];
 	size_t counter = 0,counter_,counter__;
-	stack = stack_initialize(sizeof(unsigned int),NULL);
+	stack = stack_initialize(sizeof(unsigned int),NULL,NULL);
 	if(!stack){
 		fputs("Error!\n",stderr);
 		return -1;

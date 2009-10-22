@@ -42,7 +42,7 @@ int main(void)
 	unsigned int errcode;
 	size_t counter = 0;
 	void *pointer;
-	stack = stack_initialize(sizeof(void *),free_object);
+	stack = stack_initialize(sizeof(void *),free_object,NULL);
 	if(!stack){
 		fputs("Error!\n",stderr);
 		return -1;

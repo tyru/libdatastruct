@@ -107,7 +107,7 @@ int main(void)
 	stack_t *stack;
 	int getf,buffer[128],errcode;
 	size_t counter,size;
-	stack = stack_initialize(sizeof(int),NULL);
+	stack = stack_initialize(sizeof(int),NULL,NULL);
 	if(!stack){
 		fputs("Error!\n",stderr);
 		return -1;
