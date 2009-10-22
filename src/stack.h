@@ -54,6 +54,7 @@ typedef struct stack
 {
 	void *array;
 	size_t size;
+	size_t max_used_size;
 	size_t element_size;
 	size_t array_size;
 	void (*release_function)(void *);

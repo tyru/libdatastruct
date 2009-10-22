@@ -68,6 +68,7 @@ stack_t *stack_initialize(const size_t element_size
 	}
 	stack->array = NULL;
 	stack->size = 0;
+	stack->max_used_size = 0;
 	stack->element_size = element_size;
 	stack->array_size = 0;
 	stack->release_function = release_function;
@@ -80,7 +81,7 @@ void stack_release(stack_t *stack)
 	if(stack){
 		if(stack->release_function){
 			size_t counter = 0;
-			while(counter != stack->size){
+			while(counter != stack->max_used_size){
 				stack->release_function(refer_by_offset(stack,counter));
 				counter++;
 			}
@@ -198,8 +199,14 @@ unsigned int stack_push(stack_t *stack,const void *input)
 		stack->array = temp;
 		stack->array_size = stack->array_size+STACK_MEMORY_ALLOCATION_UNIT_SIZE;
 	}
+	if(stack->size < stack->max_used_size && stack->release_function){
+		stack->release_function(refer_by_offset(stack,stack->size));
+	}
 	stack->copy_function(refer_by_offset(stack,stack->size),input,stack->element_size);
 	stack->size++;
+	if(stack->max_used_size < stack->size){
+		stack->max_used_size = stack->size;
+	}
 	return STACK_SUCCESS;
 }
 
