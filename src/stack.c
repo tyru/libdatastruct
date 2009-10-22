@@ -37,7 +37,7 @@
 *******************************************************************************/
 
 #define void_pointer_addition(pointer,number) \
-    ((void *)((char *)pointer+number))
+    ((void *)((char *)(pointer)+(number)))
 
 #define refer_by_offset(stack,offset) \
     (void_pointer_addition((stack)->array,(stack)->element_size*(offset)))
