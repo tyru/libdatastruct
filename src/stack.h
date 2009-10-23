@@ -50,7 +50,7 @@
 
 typedef struct stack stack_t;
 
-typedef struct stack
+struct stack
 {
 	void *array;
 	size_t size;
