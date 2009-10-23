@@ -220,12 +220,19 @@ unsigned int stack_pop(stack_t *stack,void *output)
 		stack->copy_function(output,refer_by_offset(stack,stack->size),stack->element_size);
 	}
 	if(STACK_MEMORY_ALLOCATION_UNIT_SIZE*2 <= stack->array_size-stack->size){
-		void *temp = realloc(stack->array,stack->element_size
-		    *(stack->array_size-STACK_MEMORY_ALLOCATION_UNIT_SIZE));
+		const size_t next_array_size = stack->array_size-STACK_MEMORY_ALLOCATION_UNIT_SIZE;
+		if (stack->release_function) {
+			size_t counter = next_array_size;
+			while (counter < stack->max_used_size) {
+				stack->release_function(refer_by_offset(stack,counter));
+				counter++;
+			}
+		}
+		void *temp = realloc(stack->array,stack->element_size*next_array_size);
 		if(temp){
+			stack->max_used_size = next_array_size;
 			stack->array = temp;
-			stack->array_size
-			    = stack->array_size-STACK_MEMORY_ALLOCATION_UNIT_SIZE;
+			stack->array_size = next_array_size;
 		}
 	}
 	return STACK_SUCCESS;
