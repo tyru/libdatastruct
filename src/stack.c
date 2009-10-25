@@ -260,12 +260,18 @@ unsigned int stack_push_many_elements
 		}
 		stack->max_used_size = stack->size;
 	}
-	counter = 0;
-	while (counter < push_size) {
-		stack->copy_function(refer_by_offset(stack,stack->size+counter)
-			,void_pointer_addition(input, stack->element_size*counter)
-			,stack->element_size);
-		counter++;
+	if(stack->copy_function == memcpy){
+		stack->copy_function(refer_by_offset(stack,stack->size)
+			,input,stack->element_size*push_size);
+	}
+	else{
+		counter = 0;
+		while (counter < push_size) {
+			stack->copy_function(refer_by_offset(stack,stack->size+counter)
+				,void_pointer_addition(input, stack->element_size*counter)
+				,stack->element_size);
+			counter++;
+		}
 	}
 	stack->size += push_size;
 	if(stack->max_used_size < stack->size){
