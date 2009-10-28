@@ -66,7 +66,7 @@ struct stack
 *******************************************************************************/
 
 #define stack_size(stack) \
-    ((stack)->size)
+    ((size_t)(stack)->size)
 
 #define stack_empty(stack) \
     (!(stack)->size)
