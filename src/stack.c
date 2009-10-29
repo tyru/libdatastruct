@@ -27,20 +27,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdlib.h>
-#include <string.h>
+/*******************************************************************************
+	Including Headers
+*******************************************************************************/
 
 #include "stack.h"
+#include "common_private.h"
 
 /*******************************************************************************
 	Macros
 *******************************************************************************/
 
-#define void_pointer_addition(pointer,number) \
-    ((void *)((char *)pointer+number))
-
 #define refer_by_offset(stack,offset) \
-    (void_pointer_addition((stack)->array,(stack)->element_size*(offset)))
+    ((stack)->array+(stack)->element_size*(offset))
 
 #define refer_by_offset_from_bottom(stack,offset) \
     (refer_by_offset((stack),(offset)))
@@ -76,7 +75,7 @@ stack_t *stack_initialize(const size_t element_size
 void stack_release(stack_t *stack)
 {
 	if(stack){
-		if(stack->release_function){
+		if(stack->release_function != DEFAULT_RELEASE_FUNCTION){
 			size_t counter = 0;
 			while(counter != stack->size){
 				stack->release_function(refer_by_offset(stack,counter));
@@ -159,8 +158,9 @@ unsigned int stack_refer_many_elements_from_bottom
 }
 
 unsigned int stack_refer_many_elements_from_top
-    (stack_t *stack,const size_t offset_a,const size_t offset_b,void *output)
+    (stack_t *stack,const size_t offset_a,const size_t offset_b,void *output_)
 {
+	char *output = output_;
 	if(offset_a >= stack_size(stack) || offset_b >= stack_size(stack)){
 		return STACK_OFFSET_IS_TOO_LARGE;
 	}
@@ -176,7 +176,7 @@ unsigned int stack_refer_many_elements_from_top
 		}
 		area_size = offset_big-offset_small+1;
 		while(counter != area_size){
-			memcpy(void_pointer_addition(output,stack->element_size*counter)
+			memcpy(output+stack->element_size*counter
 			    ,refer_by_offset_from_top(stack,offset_small+counter)
 			    ,stack->element_size);
 			counter++;
@@ -242,16 +242,16 @@ unsigned int stack_push_many_elements
 }
 
 unsigned int stack_pop_many_elements
-    (stack_t *stack,const size_t pop_size,void *output)
+    (stack_t *stack,const size_t pop_size,void *output_)
 {
+	char *output = output_;
 	if(stack->size < pop_size){
 		return STACK_EMPTY;
 	}
 	if(output){
 		size_t counter = pop_size;
 		while(counter){
-			memcpy(void_pointer_addition(output
-			    ,stack->element_size*(pop_size-counter))
+			memcpy(output+stack->element_size*(pop_size-counter)
 			    ,refer_by_offset_from_top(stack,pop_size-counter)
 			    ,stack->element_size);
 			counter--;

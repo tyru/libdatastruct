@@ -35,7 +35,7 @@ int main(void)
 	queue_t *queue;
 	int errcode;
 	size_t counter = 0,integer,integer_;
-	queue = queue_initialize(sizeof(int),NULL);
+	queue = queue_initialize(sizeof(int),DEFAULT_RELEASE_FUNCTION);
 	if(!queue){
 		fputs("Error!\n",stderr);
 		return -1;

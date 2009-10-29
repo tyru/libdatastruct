@@ -55,7 +55,7 @@ int main(void)
 			fputs("Error!\n",stderr);
 			return -1;
 		}
-		fprintf(stdout,"enqueue : %d\n",pointer);
+		fprintf(stdout,"enqueue : %d\n",(unsigned int)pointer);
 		if(!(counter%3)){
 			errcode = queue_dequeue(queue,&pointer);
 			if(errcode){
@@ -63,7 +63,7 @@ int main(void)
 				fputs("Error!\n",stderr);
 				return -1;
 			}
-			fprintf(stdout,"dequeue : %d\n",pointer);
+			fprintf(stdout,"dequeue : %d\n",(unsigned int)pointer);
 			free_object(&pointer);
 		}
 		counter++;
@@ -75,7 +75,7 @@ int main(void)
 			fputs("Error!\n",stderr);
 			return -1;
 		}
-		fprintf(stdout,"dequeue : %d\n",pointer);
+		fprintf(stdout,"dequeue : %d\n",(unsigned int)pointer);
 		free_object(&pointer);
 	}
 	queue_release(queue);

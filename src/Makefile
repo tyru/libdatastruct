@@ -1,149 +1,65 @@
 
 CC = gcc
+CFLAGS = -Wall
 
-all : run
+OBJ = common.o cassoclist.o deque.o stack.o queue.o \
+    test/cassoclist/1.o test/cassoclist/2.o test/deque/1.o test/deque/2.o \
+    test/stack/1.o test/stack/2.o test/stack/3.o test/stack/4.o \
+    test/queue/1.o test/queue/2.o
 
-bin : bin/cassoclist/1 bin/cassoclist/2 bin/deque/1 bin/deque/2 \
-    bin/stack/1 bin/stack/2 bin/stack/3 bin/stack/4 \
-	bin/queue/1 bin/queue/2
+BIN = test/cassoclist/1.bin test/cassoclist/2.bin \
+    test/deque/1.bin test/deque/2.bin test/stack/1.bin test/stack/2.bin \
+    test/stack/3.bin test/stack/4.bin test/queue/1.bin test/queue/2.bin
 
-obj/cassoclist.o : src/cassoclist.c src/cassoclist.h
-	mkdir -p obj
-	$(CC) -o $@ -c src/cassoclist.c
+.SUFFIXES : .c .o .bin
 
-obj/deque.o : src/deque.c src/cassoclist.h
-	mkdir -p obj
-	$(CC) -o $@ -c src/deque.c
+.PHONY : all run clean
 
-obj/stack.o : src/stack.c src/stack.h
-	mkdir -p obj
-	$(CC) -o $@ -c src/stack.c
+.c.o :
+	$(CC) $(CFLAGS) -c -o $@ $<
 
-obj/queue.o : src/queue.c src/queue.h
-	mkdir -p obj
-	$(CC) -o $@ -c src/queue.c
+.o.bin :
+	$(CC) $(CFLAGS) -o $@ $^
 
-obj/test/cassoclist/1.o : src/test/cassoclist/1.c src/cassoclist.h
-	mkdir -p obj/test/cassoclist/
-	$(CC) -o $@ -c src/test/cassoclist/1.c
+all : $(BIN)
 
-obj/test/cassoclist/2.o : src/test/cassoclist/2.c src/cassoclist.h
-	mkdir -p obj/test/cassoclist/
-	$(CC) -o $@ -c src/test/cassoclist/2.c
+run : $(BIN)
+	./test/cassoclist/1.bin
+	./test/deque/1.bin
+	./test/deque/2.bin
+	./test/stack/1.bin
+	./test/stack/2.bin
+	./test/stack/3.bin
+	./test/queue/1.bin
+	./test/queue/2.bin
 
-obj/test/deque/1.o : src/test/deque/1.c src/deque.h
-	mkdir -p obj/test/deque/
-	$(CC) -o $@ -c src/test/deque/1.c
+clean : 
+	rm $(OBJ) $(BIN)
 
-obj/test/deque/2.o : src/test/deque/2.c src/deque.h
-	mkdir -p obj/test/deque/
-	$(CC) -o $@ -c src/test/deque/2.c
+test/cassoclist/1.bin : test/cassoclist/1.o cassoclist.o common.o
+test/cassoclist/2.bin : test/cassoclist/2.o cassoclist.o common.o
+test/deque/1.bin : test/deque/1.o deque.o common.o
+test/deque/2.bin : test/deque/2.o deque.o common.o
+test/stack/1.bin : test/stack/1.o stack.o common.o
+test/stack/2.bin : test/stack/2.o stack.o common.o
+test/stack/3.bin : test/stack/3.o stack.o common.o
+test/stack/4.bin : test/stack/4.o stack.o common.o
+test/queue/1.bin : test/queue/1.o queue.o common.o
+test/queue/2.bin : test/queue/2.o queue.o common.o
 
-obj/test/stack/1.o : src/test/stack/1.c src/stack.h
-	mkdir -p obj/test/stack/
-	$(CC) -o $@ -c src/test/stack/1.c
+common.o : common.c common_private.h common_public.h
+cassoclist.o : cassoclist.c cassoclist.h common_private.h common_public.h
+deque.o : deque.c deque.h common_private.h common_public.h
+stack.o : stack.c stack.h common_private.h common_public.h
+queue.o : queue.c queue.h common_private.h common_public.h
+test/cassoclist/1.o : test/cassoclist/1.c cassoclist.h common_public.h
+test/cassoclist/2.o : test/cassoclist/2.c cassoclist.h common_public.h
+test/deque/1.o : test/deque/1.c deque.h common_public.h
+test/deque/2.o : test/deque/2.c deque.h common_public.h
+test/stack/1.o : test/stack/1.c stack.h common_public.h
+test/stack/2.o : test/stack/2.c stack.h common_public.h
+test/stack/3.o : test/stack/3.c stack.h common_public.h
+test/stack/4.o : test/stack/4.c stack.h common_public.h
+test/queue/1.o : test/queue/1.c queue.h common_public.h
+test/queue/2.o : test/queue/2.c queue.h common_public.h
 
-obj/test/stack/2.o : src/test/stack/2.c src/stack.h
-	mkdir -p obj/test/stack/
-	$(CC) -o $@ -c src/test/stack/2.c
-
-obj/test/stack/3.o : src/test/stack/3.c src/stack.h
-	mkdir -p obj/test/stack/
-	$(CC) -o $@ -c src/test/stack/3.c
-
-obj/test/stack/4.o : src/test/stack/4.c src/stack.h
-	mkdir -p obj/test/stack/
-	$(CC) -o $@ -c src/test/stack/4.c
-
-obj/test/queue/1.o : src/test/queue/1.c src/queue.h
-	mkdir -p obj/test/queue/
-	$(CC) -o $@ -c src/test/queue/1.c
-
-obj/test/queue/2.o : src/test/queue/2.c src/queue.h
-	mkdir -p obj/test/queue/
-	$(CC) -o $@ -c src/test/queue/2.c
-
-bin/cassoclist/1 : obj/cassoclist.o obj/test/cassoclist/1.o
-	mkdir -p bin/cassoclist/
-	$(CC) -o $@ $^
-
-bin/cassoclist/2 : obj/cassoclist.o obj/test/cassoclist/2.o
-	mkdir -p bin/cassoclist/
-	$(CC) -o $@ $^
-
-bin/deque/1 : obj/deque.o obj/test/deque/1.o
-	mkdir -p bin/deque/
-	$(CC) -o $@ $^
-
-bin/deque/2 : obj/deque.o obj/test/deque/2.o
-	mkdir -p bin/deque/
-	$(CC) -o $@ $^
-
-bin/stack/1 : obj/stack.o obj/test/stack/1.o
-	mkdir -p bin/stack/
-	$(CC) -o $@ $^
-
-bin/stack/2 : obj/stack.o obj/test/stack/2.o
-	mkdir -p bin/stack/
-	$(CC) -o $@ $^
-
-bin/stack/3 : obj/stack.o obj/test/stack/3.o
-	mkdir -p bin/stack/
-	$(CC) -o $@ $^
-
-bin/stack/4 : obj/stack.o obj/test/stack/4.o
-	mkdir -p bin/stack/
-	$(CC) -o $@ $^
-
-bin/queue/1 : obj/queue.o obj/test/queue/1.o
-	mkdir -p bin/queue/
-	$(CC) -o $@ $^
-
-bin/queue/2 : obj/queue.o obj/test/queue/2.o
-	mkdir -p bin/queue/
-	$(CC) -o $@ $^
-
-run : bin
-	@echo
-	@echo bin/cassoclist/1
-	@echo
-	@bin/cassoclist/1
-	
-	@echo
-	@echo bin/deque/1
-	@echo
-	@bin/deque/1
-	
-	@echo
-	@echo bin/deque/2
-	@echo
-	@bin/deque/2
-	
-	@echo
-	@echo bin/stack/1
-	@echo
-	@bin/stack/1
-	
-	@echo
-	@echo bin/stack/2
-	@echo
-	@bin/stack/2
-	
-	@echo
-	@echo bin/stack/4
-	@echo
-	@bin/stack/4
-	
-	@echo
-	@echo bin/queue/1
-	@echo
-	@bin/queue/1
-	
-	@echo
-	@echo bin/queue/2
-	@echo
-	@bin/queue/2
-
-clean :
-	rm -rf obj
-	rm -rf bin

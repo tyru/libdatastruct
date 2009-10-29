@@ -35,7 +35,7 @@ int main(void)
 	stack_t *stack;
 	unsigned int errcode,integer,integer_;
 	size_t counter = 0;
-	stack = stack_initialize(sizeof(unsigned int),NULL);
+	stack = stack_initialize(sizeof(unsigned int),DEFAULT_RELEASE_FUNCTION);
 	if(!stack){
 		fputs("Error!\n",stderr);
 		return -1;

@@ -31,8 +31,6 @@
 
 #define HEADER_QUEUE_H
 
-#include <stddef.h>
-
 /*******************************************************************************
 	Constants
 *******************************************************************************/
@@ -45,6 +43,12 @@
 #define QUEUE_DEFAULT_ARRAY_SIZE                            64
 
 /*******************************************************************************
+	Including Headers
+*******************************************************************************/
+
+#include "common_public.h"
+
+/*******************************************************************************
 	Structures
 *******************************************************************************/
 
@@ -52,7 +56,7 @@ typedef struct queue queue_t;
 
 struct queue
 {
-	void *array;
+	char *array;
 	size_t size;
 	size_t element_size;
 	size_t array_size;
@@ -75,7 +79,7 @@ struct queue
 *******************************************************************************/
 
 extern queue_t *queue_initialize
-    (const size_t,void (*)(void *));
+    (size_t,void (*)(void *));
 extern void queue_release
     (queue_t *);
 extern unsigned int queue_front
@@ -83,12 +87,12 @@ extern unsigned int queue_front
 extern unsigned int queue_back
     (queue_t *,void *);
 extern unsigned int queue_refer_from_front
-    (queue_t *,const size_t,void *);
+    (queue_t *,size_t,void *);
 extern unsigned int queue_refer_from_back
-    (queue_t *,const size_t,void *);
+    (queue_t *,size_t,void *);
 extern unsigned int queue_enqueue
     (queue_t *,const void *);
 extern unsigned int queue_dequeue
     (queue_t *,void *);
 
-#endif
+#endif /* HEADER_QUEUE_H */

@@ -27,21 +27,19 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <stdlib.h>
-#include <string.h>
+/*******************************************************************************
+	Including Headers
+*******************************************************************************/
 
 #include "queue.h"
+#include "common_private.h"
 
 /*******************************************************************************
 	Macros
 *******************************************************************************/
 
-#define void_pointer_addition(pointer,number) \
-    ((void *)((char *)pointer+number))
-
 #define refer_by_offset(queue,offset) \
-    (void_pointer_addition((queue)->array \
-    ,(queue)->element_size*((offset)%(queue)->array_size)))
+    ((queue)->array+(queue)->element_size*((offset)%(queue)->array_size))
 
 #define refer_by_offset_from_front(queue,offset) \
     refer_by_offset((queue),(queue)->head+(offset))
@@ -82,10 +80,11 @@ queue_t *queue_initialize(const size_t element_size
 void queue_release(queue_t *queue)
 {
 	if(queue){
-		if(queue->release_function){
+		if(queue->release_function != DEFAULT_RELEASE_FUNCTION){
 			size_t counter = 0;
 			while(counter != queue->size){
-				queue->release_function(refer_by_offset_from_front(queue,counter));
+				queue->release_function
+				    (refer_by_offset_from_front(queue,counter));
 				counter++;
 			}
 		}
@@ -163,8 +162,7 @@ unsigned int queue_enqueue(queue_t *queue,const void *input)
 			return QUEUE_MEMORY_ALLOCATION_ERROR;
 		}
 		queue->array = temp;
-		memcpy(void_pointer_addition(queue->array
-		    ,queue->element_size*queue->array_size)
+		memcpy(queue->array+queue->element_size*queue->array_size
 		    ,queue->array,queue->element_size*queue->head);
 		queue->array_size = queue->array_size*2;
 	}

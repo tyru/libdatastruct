@@ -31,8 +31,6 @@
 
 #define HEADER_STACK_H
 
-#include <stddef.h>
-
 /*******************************************************************************
 	Constants
 *******************************************************************************/
@@ -45,14 +43,20 @@
 #define STACK_MEMORY_ALLOCATION_UNIT_SIZE                   32
 
 /*******************************************************************************
+	Including Headers
+*******************************************************************************/
+
+#include "common_public.h"
+
+/*******************************************************************************
 	Structures
 *******************************************************************************/
 
 typedef struct stack stack_t;
 
-typedef struct stack
+struct stack
 {
-	void *array;
+	char *array;
 	size_t size;
 	size_t element_size;
 	size_t array_size;
@@ -98,4 +102,4 @@ extern unsigned int stack_push_many_elements
 extern unsigned int stack_pop_many_elements
     (stack_t *,const size_t,void *);
 
-#endif
+#endif /* HEADER_STACK_H */

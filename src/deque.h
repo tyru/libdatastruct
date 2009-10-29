@@ -31,8 +31,6 @@
 
 #define HEADER_DEQUE_H
 
-#include <stddef.h>
-
 /*******************************************************************************
 	Constants
 *******************************************************************************/
@@ -45,6 +43,12 @@
 #define DEQUE_DEFAULT_ARRAY_SIZE                            64
 
 /*******************************************************************************
+	Including Headers
+*******************************************************************************/
+
+#include "common_public.h"
+
+/*******************************************************************************
 	Structures
 *******************************************************************************/
 
@@ -52,7 +56,7 @@ typedef struct deque deque_t;
 
 struct deque
 {
-	void *array;
+	char *array;
 	size_t size;
 	size_t element_size;
 	size_t array_size;
@@ -95,4 +99,4 @@ extern unsigned int deque_pop_front
 extern unsigned int deque_pop_back
     (deque_t *,void *);
 
-#endif
+#endif /* HEADER_DEQUE_H */

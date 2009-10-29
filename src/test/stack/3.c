@@ -30,138 +30,68 @@
 #include <stdio.h>
 #include "../../stack.h"
 
-int read_integer(FILE *input)
-{
-	int result = 0,is_minus_flag = 0,getf;
-	if(ferror(input)){
-		return 0;
-	}
-	getf = fgetc(input);
-	if(getf == '-'){
-		is_minus_flag = 1;
-	}
-	else if(getf != '+'){
-		ungetc(getf,input);
-	}
-	while(1){
-		if(ferror(input)){
-			return 0;
-		}
-		getf = fgetc(input);
-		if('0' <= getf && getf <= '9'){
-			result = result*10+getf-'0';
-		}
-		else{
-			ungetc(getf,input);
-			break;
-		}
-	}
-	return is_minus_flag?-result
-	                    :result;
-}
-
-int ignore_space(FILE *input)
-{
-	int getf;
-	while(1){
-		if(ferror(input)){
-			return -1;
-		}
-		getf = fgetc(input);
-		if(!isspace(getf) || getf == '\n'){
-			ungetc(getf,input);
-			break;
-		}
-	}
-	return 0;
-}
-
-int ignore_to_newline(FILE *input)
-{
-	int getf;
-	while(1){
-		if(ferror(input)){
-			return -1;
-		}
-		getf = fgetc(input);
-		if(getf == '\n'){
-			break;
-		}
-	}
-	return 0;
-}
-
-int stack_trace(stack_t *stack)
-{
-	size_t counter = 0;
-	while(counter != stack->size){
-		fprintf(stdout,"%d ",((int *)stack->array)[counter]);
-		counter++;
-	}
-	fputc('\n',stdout);
-	return 0;
+int my_abs(int n){
+	return (0 < n)?n
+	              :-n;
 }
 
 int main(void)
 {
 	stack_t *stack;
-	int getf,buffer[128],errcode;
-	size_t counter,size;
-	stack = stack_initialize(sizeof(int),NULL);
+	unsigned int errcode,integer,array[32];
+	size_t counter = 0,counter_,counter__;
+	stack = stack_initialize(sizeof(unsigned int),DEFAULT_RELEASE_FUNCTION);
 	if(!stack){
 		fputs("Error!\n",stderr);
 		return -1;
 	}
-	while(1){
-		ignore_space(stdin);
-		getf = fgetc(stdin);
-		if(getf == 's'){
-			fputs("set ",stdout);
-			counter = 0;
-			while(counter != 128){
-				ignore_space(stdin);
-				getf = fgetc(stdin);
-				ungetc(getf,stdin);
-				if(getf == '\n'
-				    || (getf != '+' && getf != '-' && !isdigit(getf))){
-					break;
+	while(counter != 32){
+		integer = counter;
+		errcode = stack_push(stack,&integer);
+		if(errcode){
+			fputs("Error!\n",stderr);
+			stack_release(stack);
+			return -1;
+		}
+		counter++;
+	}
+	counter = 0;
+	while(counter != 40){
+		counter_ = 0;
+		while(counter_ != 40){
+			fprintf(stdout,"from_top %02d %02d\n",counter,counter_);
+			errcode = stack_refer_many_elements_from_top
+			    (stack,counter,counter_,array);
+			if(errcode){
+				fputs("\tOffset is too large.\n",stdout);
+			}
+			else{
+				counter__ = 0;
+				fputc('\t',stdout);
+				while(counter__ != my_abs(counter-counter_)+1){
+					fprintf(stdout,"%02d ",array[counter__]);
+					counter__++;
 				}
-				buffer[counter] = read_integer(stdin);
-				fprintf(stdout,"%d ",buffer[counter]);
-				counter++;
+				fputc('\n',stdout);
 			}
-			ignore_to_newline(stdin);
-			errcode = stack_push_many_elements(stack,counter,buffer);
+			fprintf(stdout,"from_bottom %02d %02d\n",counter,counter_);
+			errcode = stack_refer_many_elements_from_bottom
+			    (stack,counter,counter_,array);
 			if(errcode){
-				fputs("Error!\n",stderr);
-				return -1;
+				fputs("\tOffset is too large.\n",stdout);
 			}
-			fputc('\n',stdout);
-			fputs("stack trace : ",stdout);
-			stack_trace(stack);
-		}
-		else if(getf == 'g'){
-			fputs("get ",stdout);
-			ignore_space(stdin);
-			size = read_integer(stdin);
-			ignore_to_newline(stdin);
-			errcode = stack_pop_many_elements(stack,size,buffer);
-			if(errcode){
-				fputs("Error!\n",stderr);
-				return -1;
+			else{
+				counter__ = 0;
+				fputc('\t',stdout);
+				while(counter__ != my_abs(counter-counter_)+1){
+					fprintf(stdout,"%02d ",array[counter__]);
+					counter__++;
+				}
+				fputc('\n',stdout);
 			}
-			counter = 0;
-			while(counter != size){
-				fprintf(stdout,"%d ",buffer[counter]);
-				counter++;
-			}
-			fputc('\n',stdout);
-			fputs("stack trace : ",stdout);
-			stack_trace(stack);
+			counter_ += 4;
 		}
-		else if(!isspace(getf)){
-			break;
-		}
+		counter += 4;
 	}
 	stack_release(stack);
 	return 0;

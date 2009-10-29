@@ -56,7 +56,7 @@ int main(void)
 	size_t counter = 0;
 	size_t temp;
 	clock_t time;
-	cassoclist = cassoclist_initialize(sizeof(size_t),NULL);
+	cassoclist = cassoclist_initialize(sizeof(size_t),DEFAULT_RELEASE_FUNCTION);
 	if(!cassoclist){
 		fputs("Error!\n",stderr);
 		return -1;

@@ -35,7 +35,7 @@ int main(void)
 	deque_t *deque;
 	int errcode,integer,integer_;
 	size_t counter = 0;
-	deque = deque_initialize(sizeof(int),NULL);
+	deque = deque_initialize(sizeof(int),DEFAULT_RELEASE_FUNCTION);
 	if(!deque){
 		fputs("Error!\n",stderr);
 		return -1;
