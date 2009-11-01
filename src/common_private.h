@@ -55,14 +55,14 @@
 
 #if GLIBC_ALLOCA
 
-#define portable_alloca                           alloca
+#define portable_alloca(size)                     (alloca(size))
 #define portable_alloca_free(ptr)                 ((void)0)
 #define portable_alloca_check(ptr)                (1)
 
 #else
 
-#define portable_alloca                           malloc
-#define portable_alloca_free                      free
+#define portable_alloca(size)                     (malloc(size))
+#define portable_alloca_free(ptr)                 (free(ptr))
 #define portable_alloca_check(ptr)                (ptr)
 
 #endif
