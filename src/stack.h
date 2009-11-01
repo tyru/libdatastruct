@@ -35,12 +35,12 @@
 	Constants
 *******************************************************************************/
 
-#define STACK_SUCCESS                                       0x00000000
-#define STACK_MEMORY_ALLOCATION_ERROR                       0x00000001
-#define STACK_EMPTY                                         0x00000002
-#define STACK_OFFSET_IS_TOO_LARGE                           0x00000004
+#define STACK_SUCCESS                             0x00000000
+#define STACK_MEMORY_ALLOCATION_ERROR             0x00000001
+#define STACK_EMPTY                               0x00000002
+#define STACK_OFFSET_IS_TOO_LARGE                 0x00000004
 
-#define STACK_MEMORY_ALLOCATION_UNIT_SIZE                   32
+#define STACK_MEMORY_ALLOCATION_UNIT_SIZE         32
 
 /*******************************************************************************
 	Including Headers
@@ -78,7 +78,7 @@ struct stack
 *******************************************************************************/
 
 extern stack_t *stack_initialize
-    (const size_t,void (*)(void *));
+    (size_t,void (*)(void *));
 extern void stack_release
     (stack_t *);
 extern unsigned int stack_bottom
@@ -86,20 +86,20 @@ extern unsigned int stack_bottom
 extern unsigned int stack_top
     (stack_t *,void *);
 extern unsigned int stack_refer_from_bottom
-    (stack_t *,const size_t,void *);
+    (stack_t *,size_t,void *);
 extern unsigned int stack_refer_from_top
-    (stack_t *,const size_t,void *);
+    (stack_t *,size_t,void *);
 extern unsigned int stack_refer_many_elements_from_bottom
-    (stack_t *,const size_t,const size_t,void *);
+    (stack_t *,size_t,size_t,void *);
 extern unsigned int stack_refer_many_elements_from_top
-    (stack_t *,const size_t,const size_t,void *);
+    (stack_t *,size_t,size_t,void *);
 extern unsigned int stack_push
     (stack_t *,const void *);
 extern unsigned int stack_pop
     (stack_t *,void *);
 extern unsigned int stack_push_many_elements
-    (stack_t *,const size_t,const void *);
+    (stack_t *,size_t,const void *);
 extern unsigned int stack_pop_many_elements
-    (stack_t *,const size_t,void *);
+    (stack_t *,size_t,void *);
 
 #endif /* HEADER_STACK_H */

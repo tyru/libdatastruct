@@ -35,17 +35,17 @@
 	Constants
 *******************************************************************************/
 
-#define CASSOCLIST_SUCCESS                                   0x00000000
-#define CASSOCLIST_MEMORY_ALLOCATION_ERROR                   0x00000001
-#define CASSOCLIST_INVALID_KEY                               0x00000002
-#define CASSOCLIST_KEY_COLLISION                             0x00000004
-#define CASSOCLIST_NOT_EXISTENT_KEY                          0x00000008
-#define CASSOCLIST_HASH_COLLISION                            0x00000010
+#define CASSOCLIST_SUCCESS                        0x00000000
+#define CASSOCLIST_MEMORY_ALLOCATION_ERROR        0x00000001
+#define CASSOCLIST_INVALID_KEY                    0x00000002
+#define CASSOCLIST_KEY_COLLISION                  0x00000004
+#define CASSOCLIST_NOT_EXISTENT_KEY               0x00000008
+#define CASSOCLIST_HASH_COLLISION                 0x00000010
 
-#define CASSOCLIST_MAX_OF_SHORT_KEY_SIZE                     16
-#define CASSOCLIST_DEFAULT_ARRAY_SIZE                        64
+#define CASSOCLIST_MAX_OF_SHORT_KEY_SIZE          16
+#define CASSOCLIST_DEFAULT_ARRAY_SIZE             64
 
-#define CASSOCLIST_HASH_TYPES                                4
+#define CASSOCLIST_HASH_TYPES                     4
 
 /*******************************************************************************
 	Including Headers
@@ -97,7 +97,7 @@ struct cassoclist
 *******************************************************************************/
 
 extern cassoclist_t *cassoclist_initialize
-    (const size_t,void (*)(void *));
+    (size_t,void (*)(void *));
 extern void cassoclist_release
     (cassoclist_t *);
 extern unsigned int cassoclist_add

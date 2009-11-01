@@ -236,7 +236,7 @@ static unsigned int cassoclist_trymove(cassoclist_t *cassoclist
 	}
 }
 
-cassoclist_t *cassoclist_initialize(const size_t element_size
+cassoclist_t *cassoclist_initialize(size_t element_size
     ,void (*release_function)(void *))
 {
 	cassoclist_t *cassoclist = malloc(sizeof(cassoclist_t));

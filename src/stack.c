@@ -57,7 +57,7 @@
 	Functions
 *******************************************************************************/
 
-stack_t *stack_initialize(const size_t element_size
+stack_t *stack_initialize(size_t element_size
     ,void (*release_function)(void *))
 {
 	stack_t *stack = malloc(sizeof(stack_t));
@@ -110,7 +110,7 @@ unsigned int stack_top(stack_t *stack,void *output)
 }
 
 unsigned int stack_refer_from_bottom
-    (stack_t *stack,const size_t offset,void *output)
+    (stack_t *stack,size_t offset,void *output)
 {
 	if(offset >= stack_size(stack)){
 		return STACK_OFFSET_IS_TOO_LARGE;
@@ -123,7 +123,7 @@ unsigned int stack_refer_from_bottom
 }
 
 unsigned int stack_refer_from_top
-    (stack_t *stack,const size_t offset,void *output)
+    (stack_t *stack,size_t offset,void *output)
 {
 	if(offset >= stack_size(stack)){
 		return STACK_OFFSET_IS_TOO_LARGE;
@@ -136,7 +136,7 @@ unsigned int stack_refer_from_top
 }
 
 unsigned int stack_refer_many_elements_from_bottom
-    (stack_t *stack,const size_t offset_a,const size_t offset_b,void *output)
+    (stack_t *stack,size_t offset_a,size_t offset_b,void *output)
 {
 	if(offset_a >= stack_size(stack) || offset_b >= stack_size(stack)){
 		return STACK_OFFSET_IS_TOO_LARGE;
@@ -158,7 +158,7 @@ unsigned int stack_refer_many_elements_from_bottom
 }
 
 unsigned int stack_refer_many_elements_from_top
-    (stack_t *stack,const size_t offset_a,const size_t offset_b,void *output_)
+    (stack_t *stack,size_t offset_a,size_t offset_b,void *output_)
 {
 	char *output = output_;
 	if(offset_a >= stack_size(stack) || offset_b >= stack_size(stack)){
@@ -223,7 +223,7 @@ unsigned int stack_pop(stack_t *stack,void *output)
 }
 
 unsigned int stack_push_many_elements
-    (stack_t *stack,const size_t push_size,const void *input)
+    (stack_t *stack,size_t push_size,const void *input)
 {
 	if(stack->size+push_size > stack->array_size){
 		size_t new_size = STACK_MEMORY_ALLOCATION_UNIT_SIZE*((size_t)
@@ -242,7 +242,7 @@ unsigned int stack_push_many_elements
 }
 
 unsigned int stack_pop_many_elements
-    (stack_t *stack,const size_t pop_size,void *output_)
+    (stack_t *stack,size_t pop_size,void *output_)
 {
 	char *output = output_;
 	if(stack->size < pop_size){

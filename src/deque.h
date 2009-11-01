@@ -35,12 +35,12 @@
 	Constants
 *******************************************************************************/
 
-#define DEQUE_SUCCESS                                       0x00000000
-#define DEQUE_MEMORY_ALLOCATION_ERROR                       0x00000001
-#define DEQUE_EMPTY                                         0x00000002
-#define DEQUE_OFFSET_IS_TOO_LARGE                           0x00000004
+#define DEQUE_SUCCESS                             0x00000000
+#define DEQUE_MEMORY_ALLOCATION_ERROR             0x00000001
+#define DEQUE_EMPTY                               0x00000002
+#define DEQUE_OFFSET_IS_TOO_LARGE                 0x00000004
 
-#define DEQUE_DEFAULT_ARRAY_SIZE                            64
+#define DEQUE_DEFAULT_ARRAY_SIZE                  64
 
 /*******************************************************************************
 	Including Headers
@@ -79,7 +79,7 @@ struct deque
 *******************************************************************************/
 
 extern deque_t *deque_initialize
-    (const size_t,void (*)(void *));
+    (size_t,void (*)(void *));
 extern void deque_release
     (deque_t *);
 extern unsigned int deque_front
@@ -87,9 +87,9 @@ extern unsigned int deque_front
 extern unsigned int deque_back
     (deque_t *,void *);
 extern unsigned int deque_refer_from_front
-    (deque_t *,const size_t,void *);
+    (deque_t *,size_t,void *);
 extern unsigned int deque_refer_from_back
-    (deque_t *,const size_t,void *);
+    (deque_t *,size_t,void *);
 extern unsigned int deque_push_front
     (deque_t *,const void *);
 extern unsigned int deque_push_back

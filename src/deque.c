@@ -72,8 +72,7 @@ static unsigned int deque_resize_to_large(deque_t *deque)
 	return DEQUE_SUCCESS;
 }
 
-deque_t *deque_initialize(const size_t element_size
-    ,void (*release_function)(void *))
+deque_t *deque_initialize(size_t element_size,void (*release_function)(void *))
 {
 	deque_t *deque = malloc(sizeof(deque_t));
 	if(!deque){
@@ -130,8 +129,7 @@ unsigned int deque_back(deque_t *deque,void *output)
 	return DEQUE_SUCCESS;
 }
 
-unsigned int deque_refer_from_front
-    (deque_t *deque,const size_t offset,void *output)
+unsigned int deque_refer_from_front(deque_t *deque,size_t offset,void *output)
 {
 	if(offset >= deque_size(deque)){
 		return DEQUE_OFFSET_IS_TOO_LARGE;
@@ -143,8 +141,7 @@ unsigned int deque_refer_from_front
 	return DEQUE_SUCCESS;
 }
 
-unsigned int deque_refer_from_back
-    (deque_t *deque,const size_t offset,void *output)
+unsigned int deque_refer_from_back(deque_t *deque,size_t offset,void *output)
 {
 	if(offset >= deque_size(deque)){
 		return DEQUE_OFFSET_IS_TOO_LARGE;

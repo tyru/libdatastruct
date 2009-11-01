@@ -57,8 +57,7 @@
 	Functions
 *******************************************************************************/
 
-queue_t *queue_initialize(const size_t element_size
-    ,void (*release_function)(void *))
+queue_t *queue_initialize(size_t element_size,void (*release_function)(void *))
 {
 	queue_t *queue = malloc(sizeof(queue_t));
 	if(!queue){
@@ -115,8 +114,7 @@ unsigned int queue_back(queue_t *queue,void *output)
 	return QUEUE_SUCCESS;
 }
 
-unsigned int queue_refer_from_front
-    (queue_t *queue,const size_t offset,void *output)
+unsigned int queue_refer_from_front(queue_t *queue,size_t offset,void *output)
 {
 	if(offset >= queue->size){
 		return QUEUE_OFFSET_IS_TOO_LARGE;
@@ -128,8 +126,7 @@ unsigned int queue_refer_from_front
 	return QUEUE_SUCCESS;
 }
 
-unsigned int queue_refer_from_back
-    (queue_t *queue,const size_t offset,void *output)
+unsigned int queue_refer_from_back(queue_t *queue,size_t offset,void *output)
 {
 	if(offset >= queue->size){
 		return QUEUE_OFFSET_IS_TOO_LARGE;

@@ -35,12 +35,12 @@
 	Constants
 *******************************************************************************/
 
-#define QUEUE_SUCCESS                                       0x00000000
-#define QUEUE_MEMORY_ALLOCATION_ERROR                       0x00000001
-#define QUEUE_EMPTY                                         0x00000002
-#define QUEUE_OFFSET_IS_TOO_LARGE                           0x00000004
+#define QUEUE_SUCCESS                             0x00000000
+#define QUEUE_MEMORY_ALLOCATION_ERROR             0x00000001
+#define QUEUE_EMPTY                               0x00000002
+#define QUEUE_OFFSET_IS_TOO_LARGE                 0x00000004
 
-#define QUEUE_DEFAULT_ARRAY_SIZE                            64
+#define QUEUE_DEFAULT_ARRAY_SIZE                  64
 
 /*******************************************************************************
 	Including Headers

@@ -35,7 +35,7 @@
 	Constants
 *******************************************************************************/
 
-#define GLIBC_ALLOCA                                        1
+#define GLIBC_ALLOCA                              1
 
 /*******************************************************************************
 	Including Headers
@@ -55,15 +55,15 @@
 
 #if GLIBC_ALLOCA
 
-#define portable_alloca                                     alloca
-#define portable_alloca_free(ptr)                           ((void)0)
-#define portable_alloca_check(ptr)                          (1)
+#define portable_alloca                           alloca
+#define portable_alloca_free(ptr)                 ((void)0)
+#define portable_alloca_check(ptr)                (1)
 
 #else
 
-#define portable_alloca                                     malloc
-#define portable_alloca_free                                free
-#define portable_alloca_check(ptr)                          (ptr)
+#define portable_alloca                           malloc
+#define portable_alloca_free                      free
+#define portable_alloca_check(ptr)                (ptr)
 
 #endif
 
