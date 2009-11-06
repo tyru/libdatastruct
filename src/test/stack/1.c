@@ -61,7 +61,7 @@ int main(void)
 			fputs("Error!\n",stderr);
 			return -1;
 		}
-		fprintf(stdout,"push : %d\n",pointer);
+		fprintf(stdout,"push : %d\n",(unsigned int)pointer);
 		if(counter%2 == 0){
 			errcode = stack_pop(stack,&pointer);
 			if(errcode){
@@ -69,7 +69,7 @@ int main(void)
 				fputs("Error!\n",stderr);
 				return -1;
 			}
-			fprintf(stdout,"pop : %d\n",pointer);
+			fprintf(stdout,"pop : %d\n",(unsigned int)pointer);
 			// free_object(&pointer);
 		}
 		counter++;
